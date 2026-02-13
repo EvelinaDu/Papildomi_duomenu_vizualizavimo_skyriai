@@ -1,1 +1,24 @@
+# Bibliotekos
 
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+# Duomenų paruošimas
+
+```{r}
+
+data <- read.csv("loan_data.csv")
+
+set.seed(2026)
+sampled_data <- data %>%
+  group_by(purpose) %>%
+  slice_sample(n = 500) %>%
+  ungroup()
+```
+
+```{r}
+head(sampled_data)
+summary(sampled_data)
+str(sampled_data)
+```
