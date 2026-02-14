@@ -75,9 +75,22 @@ outlier_summary_full
 ```
 
 ```{r}
-boxplot(sampled_data$revol.bal)
-boxplot(sampled_data$delinq.2yrs)
-boxplot(sampled_data$revol.bal)
+sampled_data %>%
+  select(where(is.numeric)) %>%
+  pivot_longer(everything()) %>%
+  ggplot(aes(x = name, y = value, fill = name)) +
+  geom_boxplot() +
+  facet_wrap(~name, scales = "free") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+```{r}
+print(paste("Daugiau nei vienas viešasis įrašas: ", sampled_data %>% select(pub.rec) %>% filter(pub.rec > 1) %>% nrow() ))
+print(paste("Bent vienas praleistas mokėjimas: ", sampled_data %>% select(delinq.2yrs) %>% filter(delinq.2yrs > 0) %>% nrow() ))
+print(paste("Palūkanos didesnės už 20%: ", sampled_data %>% select(int.rate) %>% filter(int.rate > .2) %>% nrow() ))
+print(paste("Metinis uždatbis daugiau nei 1 mln.: ", sampled_data %>% select(annual.inc) %>% filter(annual.inc > 1000000) %>% nrow() ))
+print(paste("Nesumokėta suma lygi 0: ", sampled_data %>% select(revol.bal) %>% filter(revol.bal == 0) %>% nrow() ))
 ```
 
 # Pirminė duomenų analizė
