@@ -12,6 +12,9 @@ data <- read.csv("loan_data.csv")
 data <- data %>%
   mutate(across(c(credit.policy, not.fully.paid, purpose), as.factor))
 
+data <- data %>% 
+  mutate(annual.inc = exp(log.annual.inc))
+
 nrow(data)
 length(data)
 
