@@ -82,11 +82,6 @@ boxplot(sampled_data$revol.bal)
 ## Skaitinės charakteristikos
 
 ```{r}
-sampled_data$credit.policy <- as.factor(sampled_data$credit.policy)
-str(sampled_data)
-```
-
-```{r}
 char_policy <- sampled_data %>% 
   group_by(credit.policy) %>% 
   select("int.rate", "installment", "log.annual.inc", "dti", "fico", "days.with.cr.line",
