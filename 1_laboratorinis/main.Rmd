@@ -76,3 +76,39 @@ boxplot(sampled_data$revol.bal)
 boxplot(sampled_data$delinq.2yrs)
 boxplot(sampled_data$revol.bal)
 ```
+
+# Pirminė duomenų analizė
+
+## Skaitinės charakteristikos
+
+```{r}
+sampled_data$credit.policy <- as.factor(sampled_data$credit.policy)
+str(sampled_data)
+```
+
+```{r}
+char_policy <- sampled_data %>% 
+  group_by(credit.policy) %>% 
+  select("int.rate", "installment", "log.annual.inc", "dti", "fico", "days.with.cr.line",
+         "revol.bal", "revol.util", "inq.last.6mths", "delinq.2yrs", "pub.rec") %>% 
+  summarise(across(everything(), list(min = min, max = max, 
+                                      mean = mean, sd = sd,
+                                      median = median, 
+                                      q_25 = ~quantile(.x, 0.25),
+                                      q_75 = ~quantile(.x, 0.75)))) %>% 
+  pivot_longer(cols = -credit.policy)
+```
+
+```{r}
+char_purpose <- sampled_data %>% 
+  group_by(purpose) %>% 
+  select("int.rate", "installment", "log.annual.inc", "dti", "fico", "days.with.cr.line",
+         "revol.bal", "revol.util", "inq.last.6mths", "delinq.2yrs", "pub.rec") %>% 
+  summarise(across(everything(), list(min = min, max = max, 
+                                      mean = mean, sd = sd,
+                                      median = median, 
+                                      q_25 = ~quantile(.x, 0.25),
+                                      q_75 = ~quantile(.x, 0.75)))) %>% 
+  pivot_longer(cols = -purpose)
+```
+
