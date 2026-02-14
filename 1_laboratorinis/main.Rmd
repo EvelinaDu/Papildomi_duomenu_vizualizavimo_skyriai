@@ -9,7 +9,17 @@ library(tidyverse)
 ```{r}
 
 data <- read.csv("loan_data.csv")
+data <- data %>%
+  mutate(across(c(credit.policy, not.fully.paid, purpose), as.factor))
 
+nrow(data)
+length(data)
+
+data %>%
+  summarise(across(everything(), ~ sum(is.na(.))))
+```
+
+```{r}
 set.seed(2026)
 sampled_data <- data %>%
   group_by(purpose) %>%
@@ -18,7 +28,51 @@ sampled_data <- data %>%
 ```
 
 ```{r}
+nrow(sampled_data)
 head(sampled_data)
 summary(sampled_data)
 str(sampled_data)
+```
+
+## Išskirtys
+
+```{r}
+count_outliers <- function(data, var_name) {
+  data %>%
+    summarise(
+      variable = var_name,
+      Q1 = quantile(.data[[var_name]], 0.25),
+      Q3 = quantile(.data[[var_name]], 0.75),
+      H = Q3 - Q1,
+      inner_low = Q1 - 1.5*H,
+      inner_high = Q3 + 1.5*H,
+      outer_low = Q1 - 3*H,
+      outer_high = Q3 + 3*H,
+      mild_outliers = sum(.data[[var_name]] < inner_low | .data[[var_name]] > inner_high),
+      extreme_outliers = sum(.data[[var_name]] < outer_low | .data[[var_name]] > outer_high)
+      ) %>% 
+    select(-c(inner_low, inner_high, outer_low, outer_high))
+}
+```
+
+```{r}
+numeric_cols <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  names()
+
+results_list <- lapply(numeric_cols, function(col) count_outliers(sampled_data, col))
+outlier_summary <- bind_rows(results_list)
+outlier_summary
+```
+
+```{r}
+results_list <- lapply(numeric_cols, function(col) count_outliers(data, col))
+outlier_summary_full <- bind_rows(results_list)
+outlier_summary_full
+```
+
+```{r}
+boxplot(sampled_data$revol.bal)
+boxplot(sampled_data$delinq.2yrs)
+boxplot(sampled_data$revol.bal)
 ```
