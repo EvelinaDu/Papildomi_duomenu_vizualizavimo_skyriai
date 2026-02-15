@@ -2,6 +2,8 @@
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
+library(corrplot)
+library(GGally)
 ```
 
 # Duomenų paruošimas
@@ -121,5 +123,48 @@ char_purpose <- sampled_data %>%
                                       q_25 = ~quantile(.x, 0.25),
                                       q_75 = ~quantile(.x, 0.75)))) %>% 
   pivot_longer(cols = -purpose)
+```
+
+## Koreliacijos
+
+```{r fig.height=8, fig.width=8}
+numeric_values <- sampled_data %>% 
+  select(!credit.policy & !purpose & !not.fully.paid)
+
+cor <- cor(numeric_values)
+corrplot(cor, method="number")
+```
+
+
+```{r fig.height=14, fig.width=14, message=FALSE}
+scatter_matrix <- ggpairs(numeric_values,
+                          title = "Sklaidos diagramų matrica",
+                          axisLabels = "show",
+                          lower = list(
+                            continuous = wrap("points", size = 0.5, alpha = 0.3)
+                          ))
+scatter_matrix +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+```{r fig.height=15, fig.width=15, message=FALSE}
+numeric_values_and_policy <- sampled_data %>% 
+  select(!purpose & !not.fully.paid)
+
+scatter_matrix_cat <- ggpairs(
+  numeric_values_and_policy,
+  title = "Sklaidos diagramų matrica pagal kredito politiką",
+  mapping = aes(color = credit.policy),
+  lower = list(
+    continuous = wrap("points", size = 0.5, alpha = 0.3)
+  ),
+  diag = list(
+    continuous = wrap("densityDiag", alpha = 0.4)
+  )
+)
+
+scatter_matrix_cat +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
