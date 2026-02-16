@@ -147,6 +147,37 @@ indicators <- c("int.rate", "installment", "annual.inc", "dti", "fico", "days.wi
 char_policy <- char_function(sampled_data, credit.policy, indicators) 
 char_purpose <- char_function(sampled_data, purpose, indicators)
 ```
+```{r}
+char_mean <- char_purpose %>% 
+  filter(grepl("annual.inc_mean", name)) %>% 
+  select(-name)
+
+char_sd <- char_purpose %>% 
+  filter(grepl("annual.inc_sd", name)) %>% 
+  select(-name)
+
+char_median <- char_purpose %>% 
+  filter(grepl("annual.inc_median", name)) %>% 
+  select(-name)
+
+char_mean_sd <- left_join(char_mean, char_sd, by = "purpose")
+colnames(char_mean_sd)[c(2, 3)] <- c("mean", "sd")
+
+char_mean_sd_median <- left_join(char_mean_sd, char_median, by = "purpose")
+colnames(char_mean_sd_median)[4] <- c("median")
+```
+
+
+```{r}
+ggplot(char_mean_sd_median) +
+  geom_bar(aes(x=purpose, y=mean), stat="identity", fill="grey25", alpha=0.65) +
+  geom_errorbar(aes(x=purpose, ymin=mean-sd, ymax=mean+sd), width=0.4, colour="orange1", alpha=0.9, size=1.1) +
+  geom_point(aes(x=purpose, y=median)) +
+  coord_flip() +
+  labs(x = "Vidurkis", y = "Paskolos tikslas") +
+  theme_bw()
+```
+
 
 ## Koreliacijos
 
