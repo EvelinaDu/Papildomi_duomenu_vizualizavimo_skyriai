@@ -55,8 +55,8 @@ count_outliers <- function(data, var_name) {
       outer_high = Q3 + 3*H,
       mild_outliers = sum(.data[[var_name]] < inner_low | .data[[var_name]] > inner_high),
       extreme_outliers = sum(.data[[var_name]] < outer_low | .data[[var_name]] > outer_high)
-      ) %>% 
-    select(-c(inner_low, inner_high, outer_low, outer_high))
+      ) #%>% 
+    #select(-c(inner_low, inner_high, outer_low, outer_high))
 }
 ```
 
@@ -80,7 +80,7 @@ outlier_summary_full
 sampled_data %>%
   select(where(is.numeric)) %>%
   pivot_longer(everything()) %>%
-  ggplot(aes(x = name, y = value, fill = name)) +
+  ggplot(aes(x = name, y = value)) +
   geom_boxplot() +
   facet_wrap(~name, scales = "free") +
   theme_bw() +
@@ -93,6 +93,31 @@ print(paste("Bent vienas praleistas mokėjimas: ", sampled_data %>% select(delin
 print(paste("Palūkanos didesnės už 20%: ", sampled_data %>% select(int.rate) %>% filter(int.rate > .2) %>% nrow() ))
 print(paste("Metinis uždatbis daugiau nei 1 mln.: ", sampled_data %>% select(annual.inc) %>% filter(annual.inc > 1000000) %>% nrow() ))
 print(paste("Nesumokėta suma lygi 0: ", sampled_data %>% select(revol.bal) %>% filter(revol.bal == 0) %>% nrow() ))
+print(paste("Daugiau nei 25 kreditoių užklausos: ", sampled_data %>% select(inq.last.6mths) %>% filter(inq.last.6mths > 25) %>% nrow() ))
+```
+
+```{r}
+check_bounds <- function(x, col_name, info) {
+  limits <- info[info$variable == col_name, ]
+  as.integer(x < as.numeric(limits$outer_low) | x > as.numeric(limits$outer_high))
+}
+```
+
+```{r}
+data_outlier_info <- sampled_data
+
+data_outlier_info <- sampled_data %>%
+  mutate(
+    across(
+      all_of(numeric_cols), 
+      ~ check_bounds(.x, cur_column(), outlier_summary),
+      .names = "is_out_by_{.col}"
+    )
+  )
+
+data_outlier_info <- data_outlier_info %>%
+  mutate(outlier_dim = rowSums(across(starts_with("is_out_by_")), na.rm = TRUE)) %>%
+  arrange(desc(outlier_dim))
 ```
 
 # Pirminė duomenų analizė
