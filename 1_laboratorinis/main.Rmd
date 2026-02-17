@@ -134,10 +134,12 @@ char_function <- function(data, groups, columns){
                           max = ~max(.x), 
                           mean = ~mean(.x),
                           sd = ~sd(.x),
-                          q_25 = ~quantile(.x, 0.25),
+                          q25 = ~quantile(.x, 0.25),
                           median = ~median(.x),
-                          q_75 = ~quantile(.x, 0.75)))) %>% 
-  pivot_longer(cols = -{{groups}})
+                          q75 = ~quantile(.x, 0.75)))) %>% 
+  pivot_longer(cols = -{{groups}}) %>% 
+    separate(name, into = c("pozymis", "charakteristika"), sep = "_") %>%
+    pivot_wider(names_from = pozymis, values_from = value)
 }
 ```
 
@@ -147,6 +149,7 @@ indicators <- c("int.rate", "installment", "annual.inc", "dti", "fico", "days.wi
 char_policy <- char_function(sampled_data, credit.policy, indicators) 
 char_purpose <- char_function(sampled_data, purpose, indicators)
 ```
+
 ```{r}
 char_mean <- char_purpose %>% 
   filter(grepl("annual.inc_mean", name)) %>% 
