@@ -27,8 +27,8 @@ data %>%
 ```{r}
 set.seed(2026)
 sampled_data <- data %>%
-  group_by(purpose) %>%
-  slice_sample(n = 500) %>%
+  group_by(purpose, credit.policy) %>%
+  slice_sample(prop = 0.4) %>%
   ungroup()
 ```
 
