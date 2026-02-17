@@ -127,7 +127,7 @@ data_outlier_info <- data_outlier_info %>%
 ```{r}
 char_function <- function(data, groups, columns){
   data %>%
-    group_by({{groups}}) %>% 
+    group_by(across({{groups}})) %>% 
     select(all_of(columns)) %>% 
     summarise(across(everything(), 
                      list(min = ~min(.x), 
@@ -148,6 +148,10 @@ indicators <- c("int.rate", "installment", "annual.inc", "dti", "fico", "days.wi
          "revol.bal", "revol.util", "inq.last.6mths", "delinq.2yrs", "pub.rec")
 char_policy <- char_function(sampled_data, credit.policy, indicators) 
 char_purpose <- char_function(sampled_data, purpose, indicators)
+```
+
+```{r}
+char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicators)
 ```
 
 ```{r}
