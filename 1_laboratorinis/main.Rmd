@@ -125,6 +125,15 @@ data_outlier_info <- data_outlier_info %>%
 ## Skaitinės charakteristikos
 
 ```{r}
+Modes <- function(x) {
+  ux <- unique(x)
+  tab <- tabulate(match(x, ux))
+  ux[tab == max(tab)][1]
+}
+```
+
+
+```{r}
 char_function <- function(data, groups, columns){
   data %>%
     group_by(across({{groups}})) %>% 
@@ -136,7 +145,8 @@ char_function <- function(data, groups, columns){
                           sd = ~sd(.x),
                           q25 = ~quantile(.x, 0.25),
                           median = ~median(.x),
-                          q75 = ~quantile(.x, 0.75)))) %>% 
+                          q75 = ~quantile(.x, 0.75),
+                          mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
   pivot_longer(cols = -{{groups}}) %>% 
     separate(name, into = c("pozymis", "charakteristika"), sep = "_") %>%
     pivot_wider(names_from = pozymis, values_from = value)
@@ -155,34 +165,34 @@ char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicato
 ```
 
 ```{r}
-char_mean <- char_purpose %>% 
-  filter(grepl("annual.inc_mean", name)) %>% 
-  select(-name)
+#char_mean <- char_purpose %>% 
+#  filter(grepl("annual.inc_mean", name)) %>% 
+#  select(-name)
 
-char_sd <- char_purpose %>% 
-  filter(grepl("annual.inc_sd", name)) %>% 
-  select(-name)
+#char_sd <- char_purpose %>% 
+#  filter(grepl("annual.inc_sd", name)) %>% 
+#  select(-name)
 
-char_median <- char_purpose %>% 
-  filter(grepl("annual.inc_median", name)) %>% 
-  select(-name)
+#char_median <- char_purpose %>% 
+#  filter(grepl("annual.inc_median", name)) %>% 
+#  select(-name)
 
-char_mean_sd <- left_join(char_mean, char_sd, by = "purpose")
-colnames(char_mean_sd)[c(2, 3)] <- c("mean", "sd")
+#char_mean_sd <- left_join(char_mean, char_sd, by = "purpose")
+#colnames(char_mean_sd)[c(2, 3)] <- c("mean", "sd")
 
-char_mean_sd_median <- left_join(char_mean_sd, char_median, by = "purpose")
-colnames(char_mean_sd_median)[4] <- c("median")
+#char_mean_sd_median <- left_join(char_mean_sd, char_median, by = "purpose")
+#colnames(char_mean_sd_median)[4] <- c("median")
 ```
 
 
 ```{r}
-ggplot(char_mean_sd_median) +
-  geom_bar(aes(x=purpose, y=mean), stat="identity", fill="grey25", alpha=0.65) +
-  geom_errorbar(aes(x=purpose, ymin=mean-sd, ymax=mean+sd), width=0.4, colour="orange1", alpha=0.9, size=1.1) +
-  geom_point(aes(x=purpose, y=median)) +
-  coord_flip() +
-  labs(x = "Vidurkis", y = "Paskolos tikslas") +
-  theme_bw()
+#ggplot(char_mean_sd_median) +
+#  geom_bar(aes(x=purpose, y=mean), stat="identity", fill="grey25", alpha=0.65) +
+#  geom_errorbar(aes(x=purpose, ymin=mean-sd, ymax=mean+sd), width=0.4, colour="orange1", alpha=0.9, size=1.1) +
+#  geom_point(aes(x=purpose, y=median)) +
+#  coord_flip() +
+#  labs(x = "Vidurkis", y = "Paskolos tikslas") +
+#  theme_bw()
 ```
 
 
