@@ -239,3 +239,31 @@ scatter_matrix_cat +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+
+
+
+Normavimas
+
+```{r}
+min_max_normalization <- function(x){
+  return((x-min(x)) / (max(x)-min(x)))
+}
+```
+
+```{r}
+min_max_normalized <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  mutate(across(everything(), min_max_normalization))
+```
+
+```{r}
+mean_sd_normalization <- function(x){
+  return((x-mean(x)) / sd(x))
+}
+```
+
+```{r}
+mean_sd_normalized <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  mutate(across(everything(), mean_sd_normalization))
+```
