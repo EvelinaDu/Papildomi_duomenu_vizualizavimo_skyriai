@@ -4,6 +4,7 @@
 library(tidyverse)
 library(corrplot)
 library(GGally)
+library(patchwork)
 ```
 
 # Duomenų paruošimas
@@ -237,6 +238,89 @@ scatter_matrix_cat <- ggpairs(
 
 scatter_matrix_cat +
   theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r fig.height=8, fig.width=10}
+int_rate_fico <- ggplot(sampled_data, aes(x = int.rate, 
+                         y = fico, 
+                         color = credit.policy)) +
+  geom_point(size = 1.5, alpha = 0.5) +
+  #geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Palūkanų norma ir FICO reitingas",
+    x = "Palūkanos",
+    y = "FICO",
+    color = "Kredito politika"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
+revol_bal_fico <- ggplot(sampled_data, aes(x = fico, 
+                         y = revol.bal, 
+                         color = credit.policy)) +
+  geom_point(size = 1.5, alpha = 0.5) +
+  #geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "FICO reitingas ir atnaujinamas balansas",
+    x = "FICO",
+    y = "Atnaujinamas balansas",
+    color = "Kredito politika"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
+int_rate_revol_bal <- ggplot(sampled_data, aes(x = int.rate, 
+                         y = revol.bal, 
+                         color = credit.policy)) +
+  geom_point(size = 1.5, alpha = 0.5) +
+  #geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Palūkanų norma ir atnaujinamas balansas",
+    x = "Palūkanos",
+    y = "Atnaujinamas balansas",
+    color = "Kredito politika"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
+
+installment_annual_inc <- ggplot(sampled_data, aes(x = installment, 
+                         y = log.annual.inc, 
+                         color = credit.policy)) +
+  geom_point(size = 1.5, alpha = 0.5) +
+  #geom_smooth(method = "lm", se = FALSE) + 
+  labs(
+    title = "Mėnesinė įmoka ir metinių pajamų logaritmas",
+    x = "Įmoka",
+    y = "Pajamos (log)",
+    color = "Kredito politika"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
+corr_plot <- (
+  (int_rate_fico + revol_bal_fico) /
+  (int_rate_revol_bal + installment_annual_inc)
+) +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+
+corr_plot +
+  plot_annotation(
+    title = "Paskolų rodiklių tarpusavio ryšiai",
+    theme = theme(
+      plot.title = element_text(hjust = 0.5)
+    )
+  )
+
 ```
 
 
