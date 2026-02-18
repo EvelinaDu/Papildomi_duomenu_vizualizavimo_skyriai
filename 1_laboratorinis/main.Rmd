@@ -439,6 +439,44 @@ ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy)
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+```{r fig.height=8, fig.width=12}
+long_data <- sampled_data %>%
+  pivot_longer(
+    cols = c(fico, int.rate, log.annual.inc, dti),
+    names_to = "Rodiklis",
+    values_to = "Reiksme"
+  )
+
+
+ggplot(long_data, aes(x = purpose, y = Reiksme, color = as.factor(credit.policy))) +
+  geom_jitter(alpha = 0.5, size = 1.8, width = 0.3) +
+  stat_summary(
+    fun.min = min,
+    fun.max = max,
+    geom = "errorbar",
+    position = position_dodge(width = 0.5),
+    width = 0.4,
+    size = 0.8
+  ) +
+  facet_wrap(~ Rodiklis, scales = "free_y") +
+  theme_minimal() +
+  labs(
+    title = "Kredito politika pagal skirtingus rodiklius ir paskirtį",
+    x = "Paskolos paskirtis",
+    y = "Reikšmė",
+    color = "Kredito politika"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+```
+
+
+
+
+
+
 ## Duomenų aibės normavimas
 
 ```{r}
