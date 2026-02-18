@@ -123,6 +123,31 @@ data_outlier_info <- data_outlier_info %>%
   arrange(desc(outlier_dim))
 ```
 
+```{r}
+data_outlier_info <- data_outlier_info %>%
+  mutate(is_outlier = as.integer(outlier_dim > 0) )
+```
+
+```{r}
+data_outlier_info %>%
+  group_by(credit.policy, purpose) %>% 
+  summarise(sum = sum(is_outlier)) %>% 
+  ggplot(aes(x = purpose, y = credit.policy, size = sum, color = sum)) +
+  geom_point() +
+  geom_text(aes(label = sum), 
+            size = 6,
+            vjust = -2,
+            show.legend = FALSE) +
+  labs(x = "", y = "Atitinka kredito politika", title = "Ekstremalios išskirtys") +
+  scale_size(range = c(2, 20)) +
+  theme_bw() +
+  theme(legend.position = "none",
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
+    axis.text.y = element_text(size = 11),
+    axis.title.y = element_text(size = 14),
+    plot.title = element_text(hjust = 0.5, size = 16))
+```
+
 ## Skaitinės charakteristikos
 
 ```{r}
