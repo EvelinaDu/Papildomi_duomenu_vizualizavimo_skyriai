@@ -380,3 +380,27 @@ mean_sd_normalized <- sampled_data %>%
   select(where(is.numeric)) %>% 
   mutate(across(everything(), mean_sd_normalization))
 ```
+
+
+## Papildomos vizualizacijos
+
+### Kredito politikos atitikimas pagal paskolos paskirtį
+
+```{r fig.height=6, fig.width=10}
+ggplot(sampled_data,
+       aes(x = purpose, fill = factor(credit.policy))) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Kredito politikos atitikimas pagal paskolos paskirtį",
+    x = "Paskolos paskirtis",
+    y = "Dalis",
+    fill = "Kredito politika"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(hjust = 0.5),
+    legend.position = "bottom"
+  )
+```
+
