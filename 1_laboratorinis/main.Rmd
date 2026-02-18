@@ -212,6 +212,33 @@ gg_n_dim_outliers
 #ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 8.27, height = 5, units = "in", dpi = 300)
 ```
 
+
+```{r}
+outlier_long_data <- data_outlier_info %>%
+  pivot_longer(
+    cols = all_of(numeric_cols),
+    names_to = "name",
+    values_to = "value"
+  )
+
+ggplot(outlier_long_data, aes(x = name, y = value)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(
+    data = outlier_long_data %>% filter(outlier_dim > 1),
+    aes(color = factor(outlier_dim)),
+    size = 1,
+    position = position_jitter(width = 0.1)
+  ) +
+  theme_bw() +
+  facet_wrap(~name, scales = "free") +
+  theme(
+    legend.position = "bottom"
+  )
+```
+
+
+
+
 ## Skaitinės charakteristikos
 
 ```{r}
