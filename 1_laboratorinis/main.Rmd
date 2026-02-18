@@ -40,6 +40,13 @@ summary(sampled_data)
 str(sampled_data)
 ```
 
+```{r}
+purpose_table <- table(sampled_data$purpose)
+cp_table <- table(sampled_data$credit.policy)
+
+purpose_cp_table <- table(sampled_data$purpose, sampled_data$credit.policy)
+```
+
 # Pirminė duomenų analizė
 
 ## Išskirtys
@@ -125,7 +132,7 @@ data_outlier_info <- data_outlier_info %>%
 
 ```{r}
 data_outlier_info <- data_outlier_info %>%
-  mutate(is_outlier = as.integer(outlier_dim > 0) )
+  mutate(is_outlier = as.integer(outlier_dim > 1) )
 ```
 
 ```{r}
@@ -140,8 +147,8 @@ data_outlier_info %>%
             size = 6,
             vjust = -2,
             show.legend = FALSE) +
-  labs(x = "", y = "Atitinka kredito politika", title = "Ekstremalios išskirtys") +
-  scale_size(range = c(2, 20)) +
+  labs(x = "", y = "Atitinka kredito politika", title = "Ekstremalios daugimatės išskirtys") +
+  scale_size(range = c(5, 15)) +
   theme_bw() +
   theme(legend.position = "none",
     axis.text.x = element_text(angle = 45, vjust = 0.6, size = 11),
