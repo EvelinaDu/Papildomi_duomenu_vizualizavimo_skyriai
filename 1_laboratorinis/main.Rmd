@@ -131,10 +131,12 @@ data_outlier_info <- data_outlier_info %>%
 ```{r}
 data_outlier_info %>%
   group_by(credit.policy, purpose) %>% 
-  summarise(sum = sum(is_outlier)) %>% 
-  ggplot(aes(x = purpose, y = credit.policy, size = sum, color = sum)) +
+  summarise(sum = sum(is_outlier),
+            n = n(),
+            value = round(sum/n, 2)) %>% 
+  ggplot(aes(x = purpose, y = credit.policy, size = value, color = sum)) +
   geom_point() +
-  geom_text(aes(label = sum), 
+  geom_text(aes(label = value), 
             size = 6,
             vjust = -2,
             show.legend = FALSE) +
@@ -142,7 +144,7 @@ data_outlier_info %>%
   scale_size(range = c(2, 20)) +
   theme_bw() +
   theme(legend.position = "none",
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
+    axis.text.x = element_text(angle = 45, vjust = 0.6, size = 11),
     axis.text.y = element_text(size = 11),
     axis.title.y = element_text(size = 14),
     plot.title = element_text(hjust = 0.5, size = 16))
