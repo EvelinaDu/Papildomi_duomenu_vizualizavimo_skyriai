@@ -413,3 +413,25 @@ ggplot(sampled_data,
   )
 ```
 
+
+```{r}
+ggplot(sampled_data,
+       aes(x = purpose,
+           y = fico,
+           fill = factor(credit.policy))) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  labs(
+    title = "FICO pasiskirstymas pagal paskolos paskirtį ir kredito politiką",
+    x = "Paskolos paskirtis",
+    y = "FICO",
+    fill = "Kredito politika"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+```
+
+
