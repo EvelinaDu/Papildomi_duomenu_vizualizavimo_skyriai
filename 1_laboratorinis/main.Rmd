@@ -135,26 +135,53 @@ data_outlier_info <- data_outlier_info %>%
   mutate(is_outlier = as.integer(outlier_dim > 1) )
 ```
 
-```{r}
-data_outlier_info %>%
+```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
+gg_n_dim_outliers <- data_outlier_info %>%
   group_by(credit.policy, purpose) %>% 
   summarise(sum = sum(is_outlier),
             n = n(),
             value = round(sum/n, 2)) %>% 
-  ggplot(aes(x = purpose, y = credit.policy, size = value, color = sum)) +
+  ggplot(aes(x = purpose, y = credit.policy, size = value, color = value)) +
   geom_point() +
   geom_text(aes(label = value), 
-            size = 6,
-            vjust = -2,
+            size = 4,
+            color = "black",
+            vjust = -3,
             show.legend = FALSE) +
-  labs(x = "", y = "Atitinka kredito politika", title = "Ekstremalios daugimatės išskirtys") +
-  scale_size(range = c(5, 15)) +
+  labs(x = "Paskolos paskirtis",
+       y = "Atitinka kredito politika?",
+       title = "Ekstremalių daugimačių išskirčių dalis",
+       subtitle = "Paskolų smulkiam verslui grupė pasižymi daugeliu išskirčių (22 %).") +
+  scale_y_discrete(labels = c("0" = "Ne", "1" = "Taip")) +
+  scale_x_discrete(labels = c(
+    "all_other" = "Visi kiti",
+    "credit_card" = "Kredito kortelė",
+    "debt_consolidation" = "Skolų konsolidavimas",
+    "educational" = "Edukacinis",
+    "home_improvement" = "Namų remontas",
+    "major_purchase" = "Svarbus pirkimas",
+    "small_business" = "Smulkus verslas"
+  )) +
+  scale_size(range = c(6, 20)) +
   theme_bw() +
+  theme(
+    panel.grid.major = element_line(
+      color = "grey75",
+      linetype = "dashed"
+    )
+  ) +
+  scale_color_viridis_c(option = "plasma") +
   theme(legend.position = "none",
-    axis.text.x = element_text(angle = 45, vjust = 0.6, size = 11),
+    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
     axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 14),
-    plot.title = element_text(hjust = 0.5, size = 16))
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    plot.title = element_text(size = 16),
+    plot.subtitle = element_text(size = 10))
+
+gg_n_dim_outliers
+
+#ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 8.27, height = 5, units = "in", dpi = 300)
 ```
 
 ## Skaitinės charakteristikos
