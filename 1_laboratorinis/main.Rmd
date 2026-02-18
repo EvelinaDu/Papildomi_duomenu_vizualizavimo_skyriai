@@ -305,7 +305,9 @@ ggplot(char_mean_sd_median) +
 
 ```{r fig.height=8, fig.width=8}
 numeric_values <- sampled_data %>% 
-  select(!credit.policy & !purpose & !not.fully.paid)
+  select(!credit.policy & !purpose & !not.fully.paid & !color)
+
+str(sampled_data)
 
 cor <- cor(numeric_values)
 corrplot(cor, method="number")
