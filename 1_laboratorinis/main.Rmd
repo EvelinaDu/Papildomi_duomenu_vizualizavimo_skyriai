@@ -107,6 +107,22 @@ sampled_data %>%
   theme(legend.position = "none") +
   labs(x = "Reikšmė", y = "Dažnis")
 ```
+```{r}
+library(rgl)
+
+mycolors <- c('royalblue1', 'orange1')
+sampled_data$color <- mycolors[as.numeric(as.factor(sampled_data$credit.policy))]
+
+plot3d( 
+  x=sampled_data$delinq.2yrs, y=sampled_data$revol.bal, z=sampled_data$annual.inc, 
+  col = sampled_data$color, 
+  type = 'p',
+  size = 5,
+  radius = 100,
+  xlab="delinq.2yrs", 
+  ylab="Revol. Bal", 
+  zlab="Annual Inc")
+```
 
 
 ```{r}
