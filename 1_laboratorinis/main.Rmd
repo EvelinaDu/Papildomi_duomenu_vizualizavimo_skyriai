@@ -302,7 +302,7 @@ char_mean_sd <- left_join(char_mean, char_sd, by = c("purpose", "credit.policy")
 char_mean_sd_median <- left_join(char_mean_sd, char_median, by = c("purpose", "credit.policy"))
 ```
 
-```{r}
+```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
 dodge_val <- position_dodge(width = 0.9)
 ggplot(char_mean_sd_median) +
   geom_point(aes(x = purpose, y = annual.inc_mean, group = credit.policy, shape = "Vidurkis"), 
@@ -324,7 +324,15 @@ ggplot(char_mean_sd_median) +
        title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
   coord_flip() +
   geom_hline(yintercept = 0, size = 1, color = "grey80") +
-  theme_bw()
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 10),
+        legend.title = element_text(size = 11,),
+        legend.text = element_text(size = 10))
 ```
 
 
