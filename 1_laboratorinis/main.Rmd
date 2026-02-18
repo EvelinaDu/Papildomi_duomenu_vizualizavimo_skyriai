@@ -26,7 +26,7 @@ data %>%
 ```
 
 ```{r}
-set.seed(2026)
+set.seed(6202)
 sampled_data <- data %>%
   group_by(purpose, credit.policy) %>%
   slice_sample(prop = 0.4) %>%
@@ -39,6 +39,8 @@ head(sampled_data)
 summary(sampled_data)
 str(sampled_data)
 ```
+
+# Pirminė duomenų analizė
 
 ## Išskirtys
 
@@ -121,8 +123,6 @@ data_outlier_info <- data_outlier_info %>%
   arrange(desc(outlier_dim))
 ```
 
-# Pirminė duomenų analizė
-
 ## Skaitinės charakteristikos
 
 ```{r}
@@ -132,7 +132,6 @@ Modes <- function(x) {
   ux[tab == max(tab)][1]
 }
 ```
-
 
 ```{r}
 char_function <- function(data, groups, columns){
@@ -185,7 +184,6 @@ char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicato
 #colnames(char_mean_sd_median)[4] <- c("median")
 ```
 
-
 ```{r}
 #ggplot(char_mean_sd_median) +
 #  geom_bar(aes(x=purpose, y=mean), stat="identity", fill="grey25", alpha=0.65) +
@@ -195,7 +193,6 @@ char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicato
 #  labs(x = "Vidurkis", y = "Paskolos tikslas") +
 #  theme_bw()
 ```
-
 
 ## Koreliacijos
 
@@ -207,7 +204,6 @@ cor <- cor(numeric_values)
 corrplot(cor, method="number")
 ```
 
-
 ```{r fig.height=14, fig.width=14, message=FALSE}
 scatter_matrix <- ggpairs(numeric_values,
                           title = "Sklaidos diagramų matrica",
@@ -218,7 +214,6 @@ scatter_matrix <- ggpairs(numeric_values,
 scatter_matrix +
   theme(plot.title = element_text(hjust = 0.5))
 ```
-
 
 ```{r fig.height=15, fig.width=15, message=FALSE}
 numeric_values_and_policy <- sampled_data %>% 
@@ -335,8 +330,7 @@ ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy)
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
-Normavimas
+## Duomenų aibės normavimas
 
 ```{r}
 min_max_normalization <- function(x){
