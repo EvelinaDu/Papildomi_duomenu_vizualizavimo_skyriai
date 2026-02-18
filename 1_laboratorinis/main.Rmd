@@ -224,36 +224,54 @@ char_purpose <- char_function(sampled_data, purpose, indicators)
 ```{r}
 char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicators)
 ```
-
 ```{r}
-#char_mean <- char_purpose %>% 
-#  filter(grepl("annual.inc_mean", name)) %>% 
-#  select(-name)
+char_mean <- char_combined %>% 
+  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
+  filter(grepl("mean", charakteristika)) %>% 
+  select(-"charakteristika")
+colnames(char_mean)[3] <- "annual.inc_mean"
 
-#char_sd <- char_purpose %>% 
-#  filter(grepl("annual.inc_sd", name)) %>% 
-#  select(-name)
+char_sd <- char_combined %>% 
+  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
+  filter(grepl("sd", charakteristika)) %>% 
+  select(-"charakteristika")
+colnames(char_sd)[3] <- "annual.inc_sd"
 
-#char_median <- char_purpose %>% 
-#  filter(grepl("annual.inc_median", name)) %>% 
-#  select(-name)
+char_median <- char_combined %>% 
+  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
+  filter(grepl("median", charakteristika)) %>% 
+  select(-"charakteristika")
+colnames(char_median)[3] <- "annual.inc_median"
 
-#char_mean_sd <- left_join(char_mean, char_sd, by = "purpose")
-#colnames(char_mean_sd)[c(2, 3)] <- c("mean", "sd")
-
-#char_mean_sd_median <- left_join(char_mean_sd, char_median, by = "purpose")
-#colnames(char_mean_sd_median)[4] <- c("median")
+char_mean_sd <- left_join(char_mean, char_sd, by = c("purpose", "credit.policy"))
+char_mean_sd_median <- left_join(char_mean_sd, char_median, by = c("purpose", "credit.policy"))
 ```
 
 ```{r}
-#ggplot(char_mean_sd_median) +
-#  geom_bar(aes(x=purpose, y=mean), stat="identity", fill="grey25", alpha=0.65) +
-#  geom_errorbar(aes(x=purpose, ymin=mean-sd, ymax=mean+sd), width=0.4, colour="orange1", alpha=0.9, size=1.1) +
-#  geom_point(aes(x=purpose, y=median)) +
-#  coord_flip() +
-#  labs(x = "Vidurkis", y = "Paskolos tikslas") +
-#  theme_bw()
+dodge_val <- position_dodge(width = 0.9)
+ggplot(char_mean_sd_median) +
+  geom_point(aes(x = purpose, y = annual.inc_mean, group = credit.policy, shape = "Vidurkis"), 
+             position = dodge_val, size = 3) +
+  geom_errorbar(aes(x = purpose,
+                    ymin = annual.inc_mean-annual.inc_sd,
+                    ymax = annual.inc_mean+annual.inc_sd,
+                    color = credit.policy, group = credit.policy),
+                width = 0.3, size = 1, position = dodge_val) +
+  geom_point(aes(x = purpose, y = annual.inc_median, group = credit.policy, shape = "Mediana"),
+             position = dodge_val, size=2) +
+  scale_shape_manual(name = "Charakteristika", 
+                     values = c("Vidurkis" = 3, "Mediana" = 19)) +
+  scale_y_continuous(breaks = seq(0, 228000, 38000)) +
+  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
+                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
+  labs(x = "Paskolos tikslas", y = "Matinės pajamos", 
+       title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
+  coord_flip() +
+  geom_hline(yintercept = 0, size = 1, color = "grey80") +
+  theme_bw()
 ```
+
 
 ## Koreliacijos
 
