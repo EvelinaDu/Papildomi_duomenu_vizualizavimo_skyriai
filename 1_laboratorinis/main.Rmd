@@ -96,6 +96,18 @@ sampled_data %>%
   theme_bw() +
   theme(legend.position = "none")
 ```
+```{r}
+sampled_data %>%
+  select(where(is.numeric)) %>%
+  pivot_longer(everything()) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 30, fill = "deepskyblue3", color = "honeydew3") +
+  facet_wrap(~name, scales = "free") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  labs(x = "Reikšmė", y = "Dažnis")
+```
+
 
 ```{r}
 print(paste("Daugiau nei vienas viešasis įrašas: ", sampled_data %>% select(pub.rec) %>% filter(pub.rec > 1) %>% nrow() ))
