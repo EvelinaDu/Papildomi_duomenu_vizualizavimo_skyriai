@@ -63,7 +63,7 @@ count_outliers <- function(data, var_name) {
       inner_high = Q3 + 1.5*H,
       outer_low = Q1 - 3*H,
       outer_high = Q3 + 3*H,
-      mild_outliers = sum(.data[[var_name]] < inner_low | .data[[var_name]] > inner_high),
+      mild_outliers = sum((.data[[var_name]] < inner_low & .data[[var_name]] > outer_low) | (.data[[var_name]] > inner_high &   .data[[var_name]] < outer_high)),
       extreme_outliers = sum(.data[[var_name]] < outer_low | .data[[var_name]] > outer_high)
       ) #%>% 
     #select(-c(inner_low, inner_high, outer_low, outer_high))
