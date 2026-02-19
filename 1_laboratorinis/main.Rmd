@@ -282,6 +282,7 @@ char_purpose <- char_function(sampled_data, purpose, indicators)
 ```{r}
 char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicators)
 ```
+
 ```{r}
 char_mean <- char_combined %>% 
   select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
@@ -336,6 +337,37 @@ ggplot(char_mean_sd_median) +
         plot.subtitle = element_text(size = 10),
         legend.title = element_text(size = 11,),
         legend.text = element_text(size = 10))
+```
+
+
+Naujos skaitinių charakteristikų lentelės
+
+```{r}
+char_function2 <- function(data, groups, column){
+  data %>%
+    group_by(across({{groups}})) %>% 
+    summarise(min = min(.data[[column]]), 
+              max = max(.data[[column]]), 
+              mean = mean(.data[[column]]),
+              sd = sd(.data[[column]]),
+              q25 = quantile(.data[[column]], 0.25),
+              median = median(.data[[column]]),
+              q75 = quantile(.data[[column]], 0.75),
+              mode = if (column %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.data[[column]])} else {NA}) %>%
+    mutate(across(where(is.numeric), ~ round(.x, 4)))
+}
+
+numeric_variables <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  names()
+
+all_char_tables <- lapply(numeric_variables, function(variable) {
+  char_function2(sampled_data, c(credit.policy, purpose), variable)})
+
+names(all_char_tables) <- numeric_variables
+
+all_char_tables$int.rate
+int.rate_table <- char_function2(sampled_data, c(credit.policy, purpose), "int.rate")
 ```
 
 
