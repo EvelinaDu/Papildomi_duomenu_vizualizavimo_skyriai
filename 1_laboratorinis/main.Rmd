@@ -183,8 +183,8 @@ gg_n_dim_outliers <- data_outlier_info %>%
             vjust = -3,
             show.legend = FALSE) +
   labs(x = "Paskolos paskirtis",
-       y = "Atitinka kredito politika?",
-       title = "Ekstremalių daugimačių išskirčių dalis",
+       y = "Atitinka kriterijus",
+       title = "Daugiamačių išskirčių dalis",
        subtitle = "Paskolų smulkiam verslui grupė pasižymi daugeliu išskirčių (22 %).") +
   scale_y_discrete(labels = c("0" = "Ne", "1" = "Taip")) +
   scale_x_discrete(labels = c(
@@ -253,6 +253,29 @@ outlier_summary_by_group <- sampled_data %>%
   )
 
 outlier_summary_by_group
+```
+
+```{r}
+outlier_summary_by_group %>% 
+  filter(extreme_outliers > 0 & variable != 'annual.inc') %>% 
+  pull(variable) %>% 
+  unique() -> variable_names
+
+variable_names
+
+outlier_summary_by_group %>% 
+  filter(variable %in% variable_names) %>% 
+  select(variable, purpose, extreme_outliers) %>% 
+  ggplot(aes(x = purpose, y = extreme_outliers, fill = purpose)) +
+  geom_col() +
+  facet_wrap(~variable) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "none") +
+  labs(title = "Išskirtys pagal paskirtį ir požymį",
+       x = "Požymis",
+       y = "Išskirčių skaičius")
 ```
 
 ## Skaitinės charakteristikos
