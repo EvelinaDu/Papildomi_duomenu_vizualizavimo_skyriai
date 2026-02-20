@@ -278,6 +278,38 @@ outlier_summary_by_group %>%
        y = "Išskirčių skaičius")
 ```
 
+```{r fig.height=3.5, fig.width=8, message=FALSE, warning=FALSE}
+hline_data <- outlier_summary %>% filter(variable %in% c("delinq.2yrs", "pub.rec", "revol.bal")) %>% 
+  select(variable, extreme_outliers)
+
+outlier_summary_by_group %>% 
+  filter(variable %in% c("delinq.2yrs", "pub.rec", "revol.bal")) %>% 
+  select(variable, purpose, extreme_outliers) %>% 
+  ggplot(aes(x = purpose, y = extreme_outliers, fill = purpose)) +
+  geom_col() +
+  geom_hline(data = hline_data, aes(yintercept = extreme_outliers), 
+             color = "red", linetype = "dashed", size = 1) +
+  facet_wrap(~variable) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "none") +
+  labs(title = "Išskirtys pagal paskirtį ir požymį",
+       x = "Požymis",
+       y = "Išskirčių skaičius")
+```
+
+### Aibių palyginimas
+
+```{r}
+out_set <- data_outlier_info %>% 
+  filter(is_out_by_delinq.2yrs == 1 | is_out_by_pub.rec == 1 | is_out_by_revol.bal == 1)
+
+in_set <- data_outlier_info %>% 
+  filter(is_out_by_delinq.2yrs != 1 & is_out_by_pub.rec != 1 & is_out_by_revol.bal != 1)
+
+```
+
 ## Skaitinės charakteristikos
 
 ```{r}
