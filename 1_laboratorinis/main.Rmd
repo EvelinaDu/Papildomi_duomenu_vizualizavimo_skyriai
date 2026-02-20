@@ -51,6 +51,8 @@ purpose_cp_table <- table(sampled_data$purpose, sampled_data$credit.policy)
 
 ## Išskirtys
 
+### Pagrindinė dalis
+
 ```{r}
 count_outliers <- function(data, var_name) {
   data %>%
@@ -135,6 +137,8 @@ print(paste("Metinis uždatbis daugiau nei 1 mln.: ", sampled_data %>% select(an
 print(paste("Nesumokėta suma lygi 0: ", sampled_data %>% select(revol.bal) %>% filter(revol.bal == 0) %>% nrow() ))
 print(paste("Daugiau nei 25 kreditoių užklausos: ", sampled_data %>% select(inq.last.6mths) %>% filter(inq.last.6mths > 25) %>% nrow() ))
 ```
+
+### Daufiamatės išskirtys
 
 ```{r}
 check_bounds <- function(x, col_name, info) {
@@ -239,8 +243,17 @@ ggplot(outlier_long_data, aes(x = name, y = value)) +
   labs(color = "Išskirčių dimensija", x = NULL, y = NULL)
 ```
 
+### Išskirtys pagal grupes
 
+```{r}
+outlier_summary_by_group <- sampled_data %>% 
+  group_by(purpose) %>% 
+  reframe(
+    map_dfr(numeric_cols, ~count_outliers(pick(everything()), .x))
+  )
 
+outlier_summary_by_group
+```
 
 ## Skaitinės charakteristikos
 
