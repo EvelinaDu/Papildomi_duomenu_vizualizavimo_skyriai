@@ -306,39 +306,6 @@ char_mean_sd <- left_join(char_mean, char_sd, by = c("purpose", "credit.policy")
 char_mean_sd_median <- left_join(char_mean_sd, char_median, by = c("purpose", "credit.policy"))
 ```
 
-```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
-dodge_val <- position_dodge(width = 0.9)
-ggplot(char_mean_sd_median) +
-  geom_point(aes(x = purpose, y = annual.inc_mean, group = credit.policy, shape = "Vidurkis"), 
-             position = dodge_val, size = 3) +
-  geom_errorbar(aes(x = purpose,
-                    ymin = annual.inc_mean-annual.inc_sd,
-                    ymax = annual.inc_mean+annual.inc_sd,
-                    color = credit.policy, group = credit.policy),
-                width = 0.3, size = 1, position = dodge_val) +
-  geom_point(aes(x = purpose, y = annual.inc_median, group = credit.policy, shape = "Mediana"),
-             position = dodge_val, size=2) +
-  scale_shape_manual(name = "Charakteristika", 
-                     values = c("Vidurkis" = 3, "Mediana" = 19)) +
-  scale_y_continuous(breaks = seq(0, 228000, 38000)) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
-  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
-                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
-  labs(x = "Paskolos tikslas", y = "Matinės pajamos", 
-       title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
-  coord_flip() +
-  geom_hline(yintercept = 0, size = 1, color = "grey80") +
-  theme_bw() + 
-  theme(axis.text.x = element_text(size = 11),
-        axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
-        plot.title = element_text(size = 16),
-        plot.subtitle = element_text(size = 10),
-        legend.title = element_text(size = 11,),
-        legend.text = element_text(size = 10))
-```
-
 
 Naujos skaitinių charakteristikų lentelės
 
@@ -369,7 +336,38 @@ names(all_char_tables) <- numeric_variables
 all_char_tables$int.rate
 int.rate_table <- char_function2(sampled_data, c(credit.policy, purpose), "int.rate")
 ```
-
+```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
+dodge_val <- position_dodge(width = 0.9)
+ggplot(all_char_tables$annual.inc) +
+  geom_point(aes(x = purpose, y = mean, group = credit.policy, shape = "Vidurkis"), 
+             position = dodge_val, size = 3) +
+  geom_errorbar(aes(x = purpose,
+                    ymin = mean-sd,
+                    ymax = mean+sd,
+                    color = credit.policy, group = credit.policy),
+                width = 0.3, size = 1, position = dodge_val) +
+  geom_point(aes(x = purpose, y = median, group = credit.policy, shape = "Mediana"),
+             position = dodge_val, size=2) +
+  scale_shape_manual(name = "Charakteristika", 
+                     values = c("Vidurkis" = 3, "Mediana" = 19)) +
+  scale_y_continuous(breaks = seq(0, 228000, 38000)) +
+  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
+                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
+  labs(x = "Paskolos tikslas", y = "Matinės pajamos", 
+       title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
+  coord_flip() +
+  geom_hline(yintercept = 0, size = 1, color = "grey80") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 10),
+        legend.title = element_text(size = 11,),
+        legend.text = element_text(size = 10))
+```
 
 ## Koreliacijos
 
