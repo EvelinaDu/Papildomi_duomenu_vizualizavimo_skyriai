@@ -466,6 +466,118 @@ ggplot(all_char_tables$annual.inc) +
         legend.text = element_text(size = 10))
 ```
 
+```{r}
+char_credit_policy <- sampled_data %>% 
+  group_by(credit.policy) %>% 
+  summarise(across(where(is.numeric),
+            list(mean = ~mean(.x), sd = ~sd(.x))))
+char_credit_policy
+```
+
+
+```{r}
+
+hist1 <- sampled_data %>% 
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>% 
+  ggplot(aes(x = dti, fill = credit.policy_f, color = credit.policy_f)) +
+  geom_histogram(position = 'identity', bins = 60, alpha = 0.75) +
+  geom_vline(aes(xintercept = 13.63561), color = "red", size = 1.1) +
+  geom_text(aes(x = 15.75, y = 80, label = "13,64"), size = 4.5, color = "red") +
+  geom_vline(aes(xintercept = 12.20146), color = "blue", size = 1.1) +
+  geom_text(aes(x = 10, y = 80, label = "12,20"), size = 4.5, color = "blue") +
+  labs(x = "Skolos ir pajamų santykis (DTI)", y = "Dažnis", color = "Atitinka kriterijus") +
+  scale_fill_manual(name = "Atitiko kriterijus", 
+                    labels = c("1" = "Taip", "0" = "Ne"), 
+                    values = c("1" = "#00BFC4", "0" = "#F8766D")) +
+  scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
+                     guide = "none") +
+  scale_x_continuous(breaks = seq(0, 30, 5)) +
+  scale_y_continuous(breaks = seq(0, 100, 10)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        legend.position = "none")
+hist1
+
+hist2 <- sampled_data %>% 
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>% 
+  ggplot(aes(x = fico, fill = credit.policy_f, color = credit.policy_f)) +
+  geom_histogram(position = 'identity', bins = 40, alpha = 0.75) + 
+  geom_vline(aes(xintercept = 683.0162), color = "red", size = 1.1) +
+  geom_text(aes(x = 665, y = 300, label = "683,01"), size = 4.5, color = "red") +
+  geom_vline(aes(xintercept = 717.8112), color = "blue", size = 1.1) +
+  geom_text(aes(x = 735, y = 300, label = "717,81"), size = 4.5, color = "blue") +
+  labs(x = "FICO kredito reitingas", y = "Dažnis", color = "Atitinka kriterijus") +
+  scale_fill_manual(name = "Atitiko kriterijus", 
+                    labels = c("1" = "Taip", "0" = "Ne"), 
+                    values = c("1" = "#00BFC4", "0" = "#F8766D")) +
+  scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
+                     guide = "none") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        legend.position = "none")
+hist2
+
+hist3 <- sampled_data %>% 
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>% 
+  ggplot(aes(x = inq.last.6mths, fill = credit.policy_f, color = credit.policy_f)) +
+  geom_histogram(position = 'identity', bins = 25, alpha = 0.75) + 
+  geom_vline(aes(xintercept = 3.87348591), color = "red", size = 1.1) +
+  geom_text(aes(x = 5.1, y = 1125, label = "3,87"), size = 4.5, color = "red") +
+  geom_vline(aes(xintercept = 0.9883193), color = "blue", size = 1.1) +
+  geom_text(aes(x = 2.5, y = 1125, label = "0,99"), size = 4.5, color = "blue") +
+  labs(x = "Užklausų skaičius per pastaruosius 6 mėn.", y = "Dažnis", color = "Atitinka kriterijus") +
+  scale_fill_manual(name = "Atitiko kriterijus", 
+                    labels = c("1" = "Taip", "0" = "Ne"), 
+                    values = c("1" = "#00BFC4", "0" = "#F8766D")) +
+  scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
+                     guide = "none") +
+  scale_x_continuous(breaks = seq(0, 25, 5)) +
+  scale_y_continuous(breaks = seq(0, 1500, 250)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        legend.position = "none")
+hist3
+
+hist4 <- sampled_data %>% 
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>% 
+  ggplot(aes(x = revol.util, fill = credit.policy_f, color = credit.policy_f)) +
+  geom_histogram(position = 'identity', bins = 25, alpha = 0.75) + 
+  geom_vline(aes(xintercept = 52.8874), color = "red", size = 1.1) +
+  geom_text(aes(x = 60, y = 170, label = "52,89"), size = 4.5, color = "red") +
+  geom_vline(aes(xintercept = 44.7516), color = "blue", size = 1.1) +
+  geom_text(aes(x = 37.5, y = 170, label = "44,75"), size = 4.5, color = "blue") +
+  labs(x = "Atsinaujinantis panaudojimas", y = "Dažnis", color = "Atitinka kriterijus") +
+  scale_fill_manual(name = "Atitiko kriterijus", 
+                    labels = c("1" = "Taip", "0" = "Ne"), 
+                    values = c("1" = "#00BFC4", "0" = "#F8766D")) +
+  scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
+                     guide = "none") +
+  scale_x_continuous(breaks = seq(0, 100, 10)) +
+  scale_y_continuous(breaks = seq(0, 200, 50)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        legend.position = "none")
+hist4
+
+```
+
+```{r}
+hist1 + hist2 + hist3 + hist4
+```
+
+
 ## Koreliacijos
 
 ```{r fig.height=8, fig.width=8}
