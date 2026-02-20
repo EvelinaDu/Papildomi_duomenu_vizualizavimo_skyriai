@@ -257,11 +257,9 @@ outlier_summary_by_group
 
 ```{r}
 outlier_summary_by_group %>% 
-  filter(extreme_outliers > 0 & variable != 'annual.inc') %>% 
+  filter(extreme_outliers > 0 & variable != 'annual.inc' & variable != 'log.annual.inc') %>% 
   pull(variable) %>% 
   unique() -> variable_names
-
-variable_names
 
 outlier_summary_by_group %>% 
   filter(variable %in% variable_names) %>% 
@@ -269,11 +267,26 @@ outlier_summary_by_group %>%
   ggplot(aes(x = purpose, y = extreme_outliers, fill = purpose)) +
   geom_col() +
   facet_wrap(~variable) +
+  scale_fill_viridis_d(option = "plasma") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        plot.title = element_text(hjust = 0.5),
-        legend.position = "none") +
+        legend.position = "none",
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 10)) +
+  scale_x_discrete(labels = c(
+    "all_other" = "Visi kiti",
+    "credit_card" = "Kredito kortelė",
+    "debt_consolidation" = "Skolų konsolidavimas",
+    "educational" = "Edukacinis",
+    "home_improvement" = "Namų remontas",
+    "major_purchase" = "Svarbus pirkimas",
+    "small_business" = "Smulkus verslas"
+  )) +
   labs(title = "Išskirtys pagal paskirtį ir požymį",
+       subtitle = "Diskretūs požymiai pasižymi didžiausiu išskirčių skaičiumi.",
        x = "Požymis",
        y = "Išskirčių skaičius")
 ```
@@ -288,13 +301,28 @@ outlier_summary_by_group %>%
   ggplot(aes(x = purpose, y = extreme_outliers, fill = purpose)) +
   geom_col() +
   geom_hline(data = hline_data, aes(yintercept = extreme_outliers), 
-             color = "red", linetype = "dashed", size = 1) +
+             color = "grey15", linetype = "dashed", size = 1) +
   facet_wrap(~variable) +
+  scale_fill_viridis_d(option = "plasma") +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        plot.title = element_text(hjust = 0.5),
-        legend.position = "none") +
-  labs(title = "Išskirtys pagal paskirtį ir požymį",
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.3, size = 9, face = "bold"),
+        legend.position = "none",
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12, face = "bold"),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        plot.title = element_text(size = 16),
+        plot.subtitle = element_text(size = 10)) +
+  scale_x_discrete(labels = c(
+    "all_other" = "Visi kiti",
+    "credit_card" = "Kredito kortelė",
+    "debt_consolidation" = "Skolų konsolidavimas",
+    "educational" = "Edukacinis",
+    "home_improvement" = "Namų remontas",
+    "major_purchase" = "Svarbus pirkimas",
+    "small_business" = "Smulkus verslas"
+  )) +
+  labs(title = "Grupių išskirčių palyginimas su bendru skaičiumi",
+       subtitle = "Tendencijos tarp požymių vienodos su didžiausiu išskirčių skaičiumi skolų konsolidavimo grupėje.",
        x = "Požymis",
        y = "Išskirčių skaičius")
 ```
@@ -309,6 +337,7 @@ in_set <- data_outlier_info %>%
   filter(is_out_by_delinq.2yrs != 1 & is_out_by_pub.rec != 1 & is_out_by_revol.bal != 1)
 
 ```
+
 
 ## Skaitinės charakteristikos
 
