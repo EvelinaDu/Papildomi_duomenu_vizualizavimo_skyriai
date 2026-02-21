@@ -411,7 +411,8 @@ bottom_part <- char_of_sets %>%
                 width = 0.2, size = 0.8) +
   facet_wrap(~Variable,
              scale = "free_y",
-             labeller = as_labeller(variable_names)) +
+             labeller = as_labeller(variable_names))+
+  scale_y_continuous(labels = label_number(decimal.mark = ",") ) +
   theme_bw() +
   labs(x = NULL, y = NULL, color = "Duomenų poaibis") +
   theme(legend.position = "top",
