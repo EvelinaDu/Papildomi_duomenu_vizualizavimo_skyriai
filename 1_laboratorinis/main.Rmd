@@ -692,15 +692,42 @@ combined_hist + plot_annotation(
                 legend.text = element_text(size = 10)))
 ```
 
+## Duomenų aibės normavimas
+
+```{r}
+min_max_normalization <- function(x){
+  return((x-min(x)) / (max(x)-min(x)))
+}
+```
+
+```{r}
+min_max_normalized <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  mutate(across(everything(), min_max_normalization))
+```
+
+```{r}
+mean_sd_normalization <- function(x){
+  return((x-mean(x)) / sd(x))
+}
+```
+
+```{r}
+mean_sd_normalized <- sampled_data %>% 
+  select(where(is.numeric)) %>% 
+  mutate(across(everything(), mean_sd_normalization))
+```
+
+
 ## Koreliacijos
 
 ```{r fig.height=8, fig.width=8}
-numeric_values <- sampled_data %>% 
-  select(!credit.policy & !purpose & !not.fully.paid & !color) %>%
+numeric_values <- mean_sd_normalized %>% 
+  select(!log.annual.inc) %>%
   rename(
     "Palūkanų norma" = int.rate,
+    "Įmoka" = installment, 
     "FICO" = fico,
-    "Metinės pajamos (log)" = log.annual.inc,
     "DTI" = dti,
     "Dienos su paskolos limitu" = days.with.cr.line,
     "Atnaujinamas balansas" = revol.bal,
@@ -711,10 +738,13 @@ numeric_values <- sampled_data %>%
     "Metinės pajamos" = annual.inc,
   )
 
-str(sampled_data)
-
+options(OutDec = ",")
 cor <- cor(numeric_values)
-corrplot(cor, method="number", tl.col = "black")
+par(mar = c(0, 0, 4, 0))
+corrplot(cor, method = "number", tl.col = "black")
+
+mtext("Koreliacijų matrica", side = 3, adj = 0, line = 2, cex = 1.5)
+mtext("Didžiausia koreliacija tarp FICO ir palūkanų normos: -0,71", side = 3, adj = 0, line = 0.95)
 ```
 
 ```{r fig.height=14, fig.width=14, message=FALSE}
@@ -904,31 +934,6 @@ ggplot(long_data, aes(x = purpose, y = Reiksme, color = as.factor(credit.policy)
   )
 ```
 
-## Duomenų aibės normavimas
-
-```{r}
-min_max_normalization <- function(x){
-  return((x-min(x)) / (max(x)-min(x)))
-}
-```
-
-```{r}
-min_max_normalized <- sampled_data %>% 
-  select(where(is.numeric)) %>% 
-  mutate(across(everything(), min_max_normalization))
-```
-
-```{r}
-mean_sd_normalization <- function(x){
-  return((x-mean(x)) / sd(x))
-}
-```
-
-```{r}
-mean_sd_normalized <- sampled_data %>% 
-  select(where(is.numeric)) %>% 
-  mutate(across(everything(), mean_sd_normalization))
-```
 
 ## Papildomos vizualizacijos
 
