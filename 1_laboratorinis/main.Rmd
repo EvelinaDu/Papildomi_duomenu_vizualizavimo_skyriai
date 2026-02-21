@@ -169,7 +169,7 @@ data_outlier_info <- data_outlier_info %>%
   mutate(is_outlier = as.integer(outlier_dim > 1) )
 ```
 
-```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
+```{r fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
 gg_n_dim_outliers <- data_outlier_info %>%
   group_by(credit.policy, purpose) %>% 
   summarise(sum = sum(is_outlier),
@@ -215,7 +215,7 @@ gg_n_dim_outliers <- data_outlier_info %>%
 
 gg_n_dim_outliers
 
-#ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 8.27, height = 5, units = "in", dpi = 300)
+#ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
 
@@ -356,8 +356,8 @@ char_function_out <- function(data, columns){
 
 ```{r}
 indicators <- c("int.rate", "annual.inc", "dti", "fico")
-char_out_set <- char_function_out(sampled_data, indicators) 
-char_in_set <- char_function_out(sampled_data, indicators)
+char_out_set <- char_function_out(out_set, indicators) 
+char_in_set <- char_function_out(in_set, indicators)
 ```
 
 ## Skaitinės charakteristikos
