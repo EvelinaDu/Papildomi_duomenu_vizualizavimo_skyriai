@@ -358,6 +358,51 @@ char_function_out <- function(data, columns){
 indicators <- c("int.rate", "annual.inc", "dti", "fico")
 char_out_set <- char_function_out(out_set, indicators) 
 char_in_set <- char_function_out(in_set, indicators)
+
+Variable_col <- char_out_set %>% select(Variable)
+out_group_col <- data.frame(set = rep("Išskirtis", nrow(Variable_col)))
+in_group_col <- data.frame(set = rep("Neišskirtis", nrow(Variable_col)))
+
+char_out_set <- char_out_set %>% 
+  select(-Variable) %>% 
+  round(2) %>% 
+  cbind(Variable_col, out_group_col)
+
+char_in_set <- char_in_set %>% 
+  select(-Variable) %>% 
+  round(2) %>% 
+  cbind(Variable_col, in_group_col)
+
+char_of_sets <- rbind(char_out_set, char_in_set)
+char_of_sets
+```
+
+```{r message=FALSE, warning=FALSE}
+bottom_part <- char_of_sets %>% 
+  filter(Variable != "annual.inc") %>% 
+  ggplot(aes(y = mean, x = set, color = set)) +
+  geom_point(size = 3, shape = 3) +
+  geom_errorbar(aes(ymin = min, ymax = max), 
+                width = 0.4, size = 0.5, alpha = 0.3) +
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), 
+                width = 0.2, size = 0.8) +
+  facet_wrap(~Variable, scale = "free_y") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+top_part <- char_of_sets %>% 
+  filter(Variable == "annual.inc") %>% 
+  ggplot(aes(y = set, x = mean, color = set)) +
+  geom_point(size = 3, shape = 3) +
+  #geom_errorbar(aes(xmin = min, xmax = max), 
+  #              width = 0.4, size = 0.5, alpha = 0.3) + # Gali būti pridėta kaip label maybe??
+  geom_errorbar(aes(xmin = mean - sd, xmax = mean + sd), 
+                width = 0.2, size = 0.8) +
+  facet_wrap(~Variable, scale = "free_y") +
+  theme_bw() +
+  theme(legend.position = "none")
+
+top_part / bottom_part
 ```
 
 ## Skaitinės charakteristikos
