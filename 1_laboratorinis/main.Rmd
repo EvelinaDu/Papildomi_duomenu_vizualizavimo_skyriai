@@ -177,7 +177,7 @@ gg_n_dim_outliers <- data_outlier_info %>%
             value = round(sum/n, 2)) %>% 
   ggplot(aes(x = purpose, y = credit.policy, size = value, color = value)) +
   geom_point() +
-  geom_text(aes(label = value), 
+  geom_text(aes(label = number(value, decimal.mark = ",")), 
             size = 4,
             color = "black",
             vjust = -3,
