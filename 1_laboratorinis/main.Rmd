@@ -809,7 +809,7 @@ int_rate_fico <- full_mean_sd_normalized %>%
   geom_point(size = 1.5, alpha = 0.75) +
   labs(
     title = "Palūkanų norma ir FICO reitingas",
-    x = "Palūkanos",
+    x = "Palūkanų norma",
     y = "FICO",
     color = "Atitiko kriterijus"
   ) +
@@ -821,6 +821,28 @@ int_rate_fico <- full_mean_sd_normalized %>%
   theme(
     plot.title = element_text(hjust = 0.5)
   )
+
+revol_bal_util <- full_mean_sd_normalized %>%
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
+  ggplot(aes(x = revol.bal, 
+             y = revol.util, 
+             color = credit.policy_f)) +
+  geom_point(size = 1.5, alpha = 0.75) +
+  labs(
+    title = "Atnaujinamas balansas ir atsinaujinantis panaudojimas",
+    x = "Atnaujinamas balansas",
+    y = "Atsinaujinantis panaudojimas",
+    color = "Atitiko kriterijus"
+  ) +
+  scale_color_manual(
+    values = c("1" = "#00BFC4", "0" = "#F8766D"),
+    labels = c("1" = "Taip", "0" = "Ne")
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
 
 
 revol_util_fico <- full_mean_sd_normalized %>%
@@ -844,6 +866,7 @@ revol_util_fico <- full_mean_sd_normalized %>%
     plot.title = element_text(hjust = 0.5)
   )
 
+
 int_rate_revol_util <- full_mean_sd_normalized %>%
   mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
   ggplot(aes(x = int.rate, 
@@ -852,7 +875,7 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
   geom_point(size = 1.5, alpha = 0.75) +
   labs(
     title = "Palūkanų norma ir atsinaujinantis panaudojimas",
-    x = "Palūkanos",
+    x = "Palūkanų norma",
     y = "Atsinaujinantis panaudojimas",
     color = "Atitiko kriterijus"
   ) +
@@ -866,26 +889,8 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
   )
 
 
-revol_bal_annual_inc <- full_mean_sd_normalized %>%
-  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
-  ggplot(aes(x = revol.bal, 
-             y = annual.inc, 
-             color = credit.policy_f)) +
-  geom_point(size = 1.5, alpha = 0.75) +
-  labs(
-    title = "Mėnesinė įmoka ir metinės pajamos",
-    x = "Atnaujinamas balansas",
-    y = "Metinės pajamos",
-    color = "Atitiko kriterijus"
-  ) +
-  scale_color_manual(
-    values = c("1" = "#00BFC4", "0" = "#F8766D"),
-    labels = c("1" = "Taip", "0" = "Ne")
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  )
+
+
 
 theme <- theme(
     legend.position = "none",
@@ -898,8 +903,8 @@ theme <- theme(
 )
 
 corr_plot <- (
-  (int_rate_fico + revol_util_fico) /
-  (int_rate_revol_util + revol_bal_annual_inc)
+  (int_rate_fico + revol_bal_util) /
+  (revol_util_fico + int_rate_revol_util)
 )
 
 corr_plot <- corr_plot +
@@ -911,8 +916,14 @@ corr_plot <- corr_plot +
 corr_plot <- corr_plot +
   plot_annotation(
     title = "Paskolų rodiklių tarpusavio ryšiai pagal kredito politiką",
-    theme = theme(plot.title = element_text(hjust = 0, size = 14))
+    subtitle = "Stipriausi tarpusavio ryšiai pastebimi tarp palūkanų normos, FICO reitingo ir atsinaujinančio panaudojimo",
+    theme = theme(
+      plot.title = element_text(hjust = 0, size = 14),
+      plot.subtitle = element_text(hjust = 0, size = 12)
+    )
   )
+
+corr_plot
 
 #ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
 ```
