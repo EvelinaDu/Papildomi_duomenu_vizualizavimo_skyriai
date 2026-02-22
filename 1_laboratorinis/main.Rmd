@@ -830,9 +830,6 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
   )
 
 
-
-
-
 theme <- theme(
     legend.position = "none",
     axis.text.x = element_text(size = 11, face = "bold"),
@@ -869,60 +866,50 @@ corr_plot
 #ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
 ```
 
-```{r}
-ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy))) +
-  geom_jitter(alpha = 0.5, size = 2, width = 0.4) +
-  theme_minimal() +
-  labs(title = "Kredito politika pagal FICO ir paskirtį",
-       x = "Paskolos paskirtis",
-       y = "FICO reitingas",
-       color = "Kredito politika") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
-```{r fig.height=8, fig.width=12}
+```{r}
 long_data <- sampled_data %>%
   pivot_longer(
-    cols = c(fico, int.rate, log.annual.inc, dti),
+    cols = c(fico, dti),
     names_to = "Rodiklis",
     values_to = "Reiksme"
   ) %>% 
-  mutate(Rodiklis = factor(Rodiklis, 
-                           levels = c("fico", "int.rate", "log.annual.inc", "dti"),
-                           labels = c("FICO reitingas", "Palūkanų norma", "Metinės pajamos (log)", "DTI rodiklis")))
+  mutate(
+    Rodiklis = factor(Rodiklis, 
+                      levels = c("fico", "dti"),
+                      labels = c("FICO reitingas", "DTI rodiklis")),
+    credit.policy_f = factor(credit.policy, levels = c("1", "0"))
+  ) %>%
+  arrange(credit.policy_f)
 
-ggplot(long_data, aes(x = purpose, y = Reiksme, color = as.factor(credit.policy))) +
-  geom_jitter(alpha = 0.5, size = 1.25, width = 0.3) +
-  stat_summary(
-    fun.min = min,
-    fun.max = max,
-    geom = "errorbar",
-    position = position_dodge(width = 0.5),
-    width = 0.4,
-    size = 0.8
+ggplot(long_data, aes(x = purpose, y = Reiksme, 
+                      color = credit.policy_f)) +
+  geom_jitter(alpha = 0.5, size = 1.25, width = 0.4) +
+  scale_color_manual(
+    name = "Atitinka kriterijus",
+    labels = c("1" = "Taip", "0" = "Ne"),
+    values = c("1" = "#00BFC4", "0" = "#F8766D")
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) + 
   facet_wrap(~ Rodiklis, scales = "free_y") +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11),
     axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14, hjust = 0),
     plot.subtitle = element_text(size = 10),
-    strip.text = element_text(size = 12, face = "bold")) +
+    strip.text = element_text(size = 12),
+    legend.position = "bottom"
+  ) +
   labs(
     title = "Kredito politika pagal skirtingus rodiklius ir paskirtį",
+    subtitle = "Pastebėti FICO ir DTI slesnksčiai, nusakantys ar skolininkas atitinka reikalavimus",
     x = "Paskolos paskirtis",
     y = "Reikšmė",
     color = "Kredito politika"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "bottom"
   )
 ```
 
