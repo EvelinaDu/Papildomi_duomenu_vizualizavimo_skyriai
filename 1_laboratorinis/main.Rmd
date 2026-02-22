@@ -946,18 +946,16 @@ purpose_bar <- ggplot(sampled_data, aes(x = purpose, fill = purpose)) +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
   labs(
-    title = "Duomenų pasiskirstymas pagal paskirtį",
-    subtitle = "Didžioji dalis žmonių ima paskolas skolų konsolidavimui",
     x = "Paskolos paskirtis",
     y = "Skaičius"
   ) +
-  theme(legend.position = "none",
+  theme(
+    legend.position = "none",
     axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
     axis.text.y = element_text(size = 11),
     axis.title.y = element_text(size = 12),
-    axis.title.x = element_text(size = 12),
-    plot.title = element_text(size = 14),
-    plot.subtitle = element_text(size = 10))
+    axis.title.x = element_text(size = 12)
+  )
 
 
 credit_policy_bar <- ggplot(sampled_data, 
@@ -968,28 +966,28 @@ credit_policy_bar <- ggplot(sampled_data,
   geom_bar() +
   theme_minimal() +
   labs(
-    title = "Duomenų pasiskirstymas pagal kredito politiką",
-    subtitle = "Didžioji dalis žmonių atitinka kreido suteikimo kriterijus",
     x = "Atitinka kriterijus",
-    y = NULL
+    y = "Skaičius"
   ) +
   theme(
     legend.position = "none",
     axis.text.x = element_text(size = 11, face = "bold"),
-    axis.text.y = element_text(size = 11)
-  ) +
-  theme(legend.position = "none",
-    axis.text.x = element_text(vjust = 1, hjust = 1, size = 11, face = "bold"),
     axis.text.y = element_text(size = 11),
     axis.title.y = element_text(size = 12),
-    axis.title.x = element_text(size = 12),
-    plot.title = element_text(size = 14),
-    plot.subtitle = element_text(size = 10))
+    axis.title.x = element_text(size = 12)
+  )
 
-bar_by_diff_groups <- purpose_bar + credit_policy_bar
-bar_by_diff_groups
+bar_by_diff_groups <- purpose_bar + credit_policy_bar +
+  plot_annotation(
+    title = "Duomenų pasiskirstymas pagal paskolos paskirtį ir kredito politiką",
+    subtitle = "Didžioji dalis paskolų imama skolų konsolidavimui, o dauguma skolininkų atitinka kriterijus",
+    theme = theme(
+      plot.title = element_text(size = 14,),
+      plot.subtitle = element_text(size = 11)
+    )
+  )
 
-#ggsave(filename = "bar_by_diff_groups.png", plot = bar_by_diff_groups, width = 10, height = 4, dpi = 300)
+#ggsave(filename = "bar_by_diff_groups.png", plot = bar_by_diff_groups, width = 6.7, height = 4, dpi = 300)
 ```
 
 
