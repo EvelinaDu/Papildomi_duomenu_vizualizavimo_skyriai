@@ -191,9 +191,9 @@ gg_n_dim_outliers <- data_outlier_info %>%
     "all_other" = "Visi kiti",
     "credit_card" = "Kredito kortelė",
     "debt_consolidation" = "Skolų konsolidavimas",
-    "educational" = "Edukacinis",
+    "educational" = "Edukacija",
     "home_improvement" = "Namų remontas",
-    "major_purchase" = "Svarbus pirkimas",
+    "major_purchase" = "Svarbus pirkinys",
     "small_business" = "Smulkus verslas"
   )) +
   scale_size(range = c(6, 20)) +
@@ -293,9 +293,9 @@ outlier_summary_by_group %>%
     "all_other" = "Visi kiti",
     "credit_card" = "Kredito kortelė",
     "debt_consolidation" = "Skolų konsolidavimas",
-    "educational" = "Edukacinis",
+    "educational" = "Edukacija",
     "home_improvement" = "Namų remontas",
-    "major_purchase" = "Svarbus pirkimas",
+    "major_purchase" = "Svarbus pirkinys",
     "small_business" = "Smulkus verslas"
   )) +
   labs(title = "Išskirtys pagal paskirtį ir požymį",
@@ -332,9 +332,9 @@ outlier_summary_by_group %>%
     "all_other" = "Visi kiti",
     "credit_card" = "Kredito kortelė",
     "debt_consolidation" = "Skolų konsolidavimas",
-    "educational" = "Edukacinis",
+    "educational" = "Edukacija",
     "home_improvement" = "Namų remontas",
-    "major_purchase" = "Svarbus pirkimas",
+    "major_purchase" = "Svarbus pirkinys",
     "small_business" = "Smulkus verslas"
   )) +
   labs(title = "Grupių išskirčių palyginimas su bendru skaičiumi",
