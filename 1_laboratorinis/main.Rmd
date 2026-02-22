@@ -68,8 +68,7 @@ count_outliers <- function(data, var_name) {
       outer_high = Q3 + 3*H,
       mild_outliers = sum((.data[[var_name]] < inner_low & .data[[var_name]] > outer_low) | (.data[[var_name]] > inner_high &   .data[[var_name]] < outer_high)),
       extreme_outliers = sum(.data[[var_name]] < outer_low | .data[[var_name]] > outer_high)
-      ) #%>% 
-    #select(-c(inner_low, inner_high, outer_low, outer_high))
+      )
 }
 ```
 
@@ -110,32 +109,6 @@ sampled_data %>%
   theme_bw() +
   theme(legend.position = "none") +
   labs(x = "Reikšmė", y = "Dažnis")
-```
-
-```{r}
-library(rgl)
-
-mycolors <- c('royalblue1', 'orange1')
-sampled_data$color <- mycolors[as.numeric(as.factor(sampled_data$credit.policy))]
-
-plot3d( 
-  x=sampled_data$delinq.2yrs, y=sampled_data$revol.bal, z=sampled_data$annual.inc, 
-  col = sampled_data$color, 
-  type = 'p',
-  size = 5,
-  radius = 100,
-  xlab="delinq.2yrs", 
-  ylab="Revol. Bal", 
-  zlab="Annual Inc")
-```
-
-```{r}
-print(paste("Daugiau nei vienas viešasis įrašas: ", sampled_data %>% select(pub.rec) %>% filter(pub.rec > 1) %>% nrow() ))
-print(paste("Bent vienas praleistas mokėjimas: ", sampled_data %>% select(delinq.2yrs) %>% filter(delinq.2yrs > 0) %>% nrow() ))
-print(paste("Palūkanos didesnės už 20%: ", sampled_data %>% select(int.rate) %>% filter(int.rate > .2) %>% nrow() ))
-print(paste("Metinis uždatbis daugiau nei 1 mln.: ", sampled_data %>% select(annual.inc) %>% filter(annual.inc > 1000000) %>% nrow() ))
-print(paste("Nesumokėta suma lygi 0: ", sampled_data %>% select(revol.bal) %>% filter(revol.bal == 0) %>% nrow() ))
-print(paste("Daugiau nei 25 kreditoių užklausos: ", sampled_data %>% select(inq.last.6mths) %>% filter(inq.last.6mths > 25) %>% nrow() ))
 ```
 
 ### Daugiamatės išskirtys
@@ -218,29 +191,6 @@ gg_n_dim_outliers
 #ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 6.7, height = 3.7, units = "in", dpi = 300)
 ```
 
-```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
-outlier_long_data <- data_outlier_info %>%
-  pivot_longer(
-    cols = all_of(numeric_cols),
-    names_to = "name",
-    values_to = "value"
-  )
-
-ggplot(outlier_long_data, aes(x = name, y = value)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_point(
-    data = outlier_long_data %>% filter(outlier_dim > 1),
-    aes(color = factor(outlier_dim)),
-    size = 1.2,
-    position = position_jitter(width = 0.35)
-  ) +
-  theme_bw() +
-  facet_wrap(~name, scales = "free") +
-  theme(
-    legend.position = "bottom"
-  ) +
-  labs(color = "Išskirčių dimensija", x = NULL, y = NULL)
-```
 
 ### Išskirtys pagal grupes
 
@@ -446,9 +396,7 @@ top_part <- char_of_sets %>%
 #ggsave(filename = "Išskirčių ir likusios imties palyginimas.png", width = 6.7, height = 4, units = "in", dpi = 300)
 ```
 
-
 ## Skaitinės charakteristikos
-
 
 ```{r}
 Modes <- function(x) {
@@ -723,16 +671,6 @@ mtext("Didžiausia koreliacija tarp FICO ir palūkanų normos: -0,74", side = 3,
 #dev.off()
 ```
 
-```{r fig.height=14, fig.width=14, message=FALSE}
-scatter_matrix <- ggpairs(numeric_values,
-                          title = "Sklaidos diagramų matrica",
-                          axisLabels = "show",
-                          lower = list(
-                            continuous = wrap("points", size = 0.5, alpha = 0.3)
-                          ))
-scatter_matrix +
-  theme(plot.title = element_text(hjust = 0.5))
-```
 
 ```{r fig.height=15, fig.width=15, message=FALSE}
 numeric_values_and_policy <- sampled_data %>% 
@@ -990,54 +928,4 @@ bar_by_diff_groups <- purpose_bar + credit_policy_bar +
   )
 
 #ggsave(filename = "bar_by_diff_groups.png", plot = bar_by_diff_groups, width = 6.7, height = 4, dpi = 300)
-```
-
-
-
-
-
-
-```{r fig.height=6, fig.width=10}
-ggplot(sampled_data,
-       aes(x = purpose, fill = factor(credit.policy))) +
-  geom_bar(position = "fill") +
-  labs(
-    title = "Kredito politikos atitikimas pagal paskolos paskirtį",
-    x = "Paskolos paskirtis",
-    y = "Dalis",
-    fill = "Kredito politika"
-  ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
-  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
-                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
-  theme_minimal() + 
-  theme(
-    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
-    axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 10),
-    strip.text = element_text(size = 12, face = "bold"),
-    legend.position = "bottom")
-```
-
-```{r}
-ggplot(sampled_data,
-       aes(x = purpose,
-           y = fico,
-           fill = factor(credit.policy))) +
-  geom_boxplot(position = position_dodge(width = 0.8)) +
-  labs(
-    title = "FICO pasiskirstymas pagal paskolos paskirtį ir kredito politiką",
-    x = "Paskolos paskirtis",
-    y = "FICO",
-    fill = "Kredito politika"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "bottom"
-  )
 ```
