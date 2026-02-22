@@ -169,7 +169,7 @@ data_outlier_info <- data_outlier_info %>%
   mutate(is_outlier = as.integer(outlier_dim > 1) )
 ```
 
-```{r fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
+```{r fig.height=3.7, fig.width=6.7, message=FALSE, warning=FALSE}
 gg_n_dim_outliers <- data_outlier_info %>%
   group_by(credit.policy, purpose) %>% 
   summarise(sum = sum(is_outlier),
@@ -215,7 +215,7 @@ gg_n_dim_outliers <- data_outlier_info %>%
 
 gg_n_dim_outliers
 
-#ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 6.5, height = 4, units = "in", dpi = 300)
+#ggsave(filename = "Ekstremalių_daugimačių_išskirčių_dalis.png", width = 6.7, height = 3.7, units = "in", dpi = 300)
 ```
 
 ```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
@@ -254,7 +254,7 @@ outlier_summary_by_group <- sampled_data %>%
 outlier_summary_by_group
 ```
 
-```{r fig.height=4, fig.width=6.5, message=FALSE, warning=FALSE}
+```{r fig.height=4.5, fig.width=6.7, message=FALSE, warning=FALSE}
 variable_names <- c(
   "int.rate" = "Palūkanų norma",
   "annual.inc" = "Metinės pajamos",
@@ -300,13 +300,13 @@ outlier_summary_by_group %>%
   )) +
   labs(title = "Išskirtys pagal paskirtį ir požymį",
        subtitle = "Diskretūs požymiai pasižymi didžiausiu išskirčių skaičiumi.",
-       x = "Požymis",
+       x = "Paskirtis",
        y = "Išskirčių skaičius")
 
-#ggsave(filename = "Išskirtys_pagal_paskirtį_ir_požymį.png", width = 6.5, height = 4, units = "in", dpi = 300)
+#ggsave(filename = "Išskirtys_pagal_paskirtį_ir_požymį.png", width = 6.7, height = 4.5, units = "in", dpi = 300)
 ```
 
-```{r fig.height=3.2, fig.width=6.5, message=FALSE, warning=FALSE}
+```{r fig.height=3.2, fig.width=6.7, message=FALSE, warning=FALSE}
 hline_data <- outlier_summary %>% filter(variable %in% c("delinq.2yrs", "pub.rec", "revol.bal")) %>% 
   select(variable, extreme_outliers)
 
@@ -342,7 +342,7 @@ outlier_summary_by_group %>%
        x = "Požymis",
        y = "Išskirčių skaičius")
 
-#ggsave(filename = "Grupių išskirčių palyginimas su bendru skaičiumi.png", width = 6.5, height = 3.2, units = "in", dpi = 300)
+#ggsave(filename = "Grupių išskirčių palyginimas su bendru skaičiumi.png", width = 6.7, height = 3.2, units = "in", dpi = 300)
 ```
 
 ### Aibių palyginimas
@@ -395,7 +395,7 @@ char_of_sets <- rbind(char_out_set, char_in_set)
 char_of_sets
 ```
 
-```{r fig.height=4.5, fig.width=6.5, message=FALSE, warning=FALSE}
+```{r fig.height=4, fig.width=6.7, message=FALSE, warning=FALSE}
 variable_names <- c(
   "int.rate" = "Palūkanų norma",
   "annual.inc" = "Metinės pajamos",
@@ -425,7 +425,7 @@ top_part <- char_of_sets %>%
   geom_point(size = 3, shape = 3) +
   scale_x_continuous(breaks = seq(0, 150000, by = 25000)) +
   geom_errorbar(aes(xmin = mean - sd, xmax = mean + sd), 
-                width = 0.2, size = 0.8) +
+                width = 0.4, size = 0.8) +
   facet_wrap(~Variable,
              scale = "free_y",
              labeller = as_labeller(variable_names)) +
@@ -443,8 +443,9 @@ top_part <- char_of_sets %>%
                   theme = theme(plot.title = element_text(size = 14),
                                 plot.subtitle = element_text(size = 10) ))
 
-#ggsave(filename = "Išskirčių ir likusios imties palyginimas.png", width = 6.5, height = 4.5, units = "in", dpi = 300)
+#ggsave(filename = "Išskirčių ir likusios imties palyginimas.png", width = 6.7, height = 4, units = "in", dpi = 300)
 ```
+
 
 ## Skaitinės charakteristikos
 
@@ -726,7 +727,6 @@ mean_sd_normalized <- sampled_data %>%
   mutate(across(everything(), mean_sd_normalization))
 ```
 
-
 ## Koreliacijos
 
 ```{r fig.height=8, fig.width=8}
@@ -759,9 +759,6 @@ mtext("Didžiausia koreliacija tarp FICO ir palūkanų normos: -0,74", side = 3,
 
 #dev.off()
 ```
-
-
-
 
 ```{r fig.height=14, fig.width=14, message=FALSE}
 scatter_matrix <- ggpairs(numeric_values,
@@ -798,7 +795,6 @@ scatter_matrix_cat +
 full_mean_sd_normalized <- sampled_data %>% 
   mutate(across(where(is.numeric), mean_sd_normalization))
 ```
-
 
 ```{r fig.height=8, fig.width=10}
 int_rate_fico <- full_mean_sd_normalized %>%
@@ -928,10 +924,6 @@ corr_plot
 #ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
 ```
 
-
-
-
-
 ```{r}
 ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy))) +
   geom_jitter(alpha = 0.5, size = 2, width = 0.4) +
@@ -988,7 +980,6 @@ ggplot(long_data, aes(x = purpose, y = Reiksme, color = as.factor(credit.policy)
     legend.position = "bottom"
   )
 ```
-
 
 ## Papildomos vizualizacijos
 
