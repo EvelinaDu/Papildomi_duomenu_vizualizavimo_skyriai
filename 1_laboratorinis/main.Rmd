@@ -449,6 +449,7 @@ top_part <- char_of_sets %>%
 
 ## Skaitinės charakteristikos
 
+
 ```{r}
 Modes <- function(x) {
   ux <- unique(x)
@@ -458,63 +459,22 @@ Modes <- function(x) {
 ```
 
 ```{r}
-char_function <- function(data, groups, columns){
-  data %>%
-    group_by(across({{groups}})) %>% 
-    select(all_of(columns)) %>% 
-    summarise(across(everything(), 
-                     list(min = ~min(.x), 
-                          max = ~max(.x), 
-                          mean = ~mean(.x),
-                          sd = ~sd(.x),
-                          q25 = ~quantile(.x, 0.25),
-                          median = ~median(.x),
-                          q75 = ~quantile(.x, 0.75),
-                          mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
-  pivot_longer(cols = -{{groups}}) %>% 
-    separate(name, into = c("pozymis", "charakteristika"), sep = "_") %>%
-    pivot_wider(names_from = pozymis, values_from = value)
-}
+char <- sampled_data %>% 
+  summarise(across(where(is.numeric),
+            list(mean = ~mean(.x), 
+                 sd = ~sd(.x),
+                 median = ~median(.x),
+                 mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
+  pivot_longer(everything(), 
+               names_to = c("Variable", ".value"), 
+               names_sep = "_") %>% 
+  mutate(across(where(is.numeric), ~ round(.x, 4)))
+char
 ```
 
-```{r}
-indicators <- c("int.rate", "installment", "annual.inc", "dti", "fico", "days.with.cr.line",
-         "revol.bal", "revol.util", "inq.last.6mths", "delinq.2yrs", "pub.rec")
-char_policy <- char_function(sampled_data, credit.policy, indicators) 
-char_purpose <- char_function(sampled_data, purpose, indicators)
-```
 
 ```{r}
-char_combined <- char_function(sampled_data, c(credit.policy, purpose), indicators)
-```
-
-```{r}
-char_mean <- char_combined %>% 
-  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
-  filter(grepl("mean", charakteristika)) %>% 
-  select(-"charakteristika")
-colnames(char_mean)[3] <- "annual.inc_mean"
-
-char_sd <- char_combined %>% 
-  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
-  filter(grepl("sd", charakteristika)) %>% 
-  select(-"charakteristika")
-colnames(char_sd)[3] <- "annual.inc_sd"
-
-char_median <- char_combined %>% 
-  select(c("credit.policy", "purpose", "charakteristika", "annual.inc")) %>% 
-  filter(grepl("median", charakteristika)) %>% 
-  select(-"charakteristika")
-colnames(char_median)[3] <- "annual.inc_median"
-
-char_mean_sd <- left_join(char_mean, char_sd, by = c("purpose", "credit.policy"))
-char_mean_sd_median <- left_join(char_mean_sd, char_median, by = c("purpose", "credit.policy"))
-```
-
-Naujos skaitinių charakteristikų lentelės
-
-```{r}
-char_function2 <- function(data, groups, column){
+char_function <- function(data, groups, column){
   data %>%
     group_by(across({{groups}})) %>% 
     summarise(min = min(.data[[column]]), 
@@ -533,12 +493,12 @@ numeric_variables <- sampled_data %>%
   names()
 
 all_char_tables <- lapply(numeric_variables, function(variable) {
-  char_function2(sampled_data, c(credit.policy, purpose), variable)})
+  char_function(sampled_data, c(credit.policy, purpose), variable)})
 
 names(all_char_tables) <- numeric_variables
 
 all_char_tables$int.rate
-int.rate_table <- char_function2(sampled_data, c(credit.policy, purpose), "int.rate")
+int.rate_table <- char_function(sampled_data, c(credit.policy, purpose), "int.rate")
 ```
 
 ```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
@@ -559,7 +519,7 @@ ggplot(all_char_tables$annual.inc) +
   scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
-  labs(x = "Paskirtis", y = "Matinės pajamos", 
+  labs(x = "Paskirtis", y = "Matinės pajamos (USD)", 
        title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
   coord_flip() +
   geom_hline(yintercept = 0, size = 1, color = "grey80") +
@@ -578,8 +538,11 @@ ggplot(all_char_tables$annual.inc) +
 ```{r}
 char_credit_policy <- sampled_data %>% 
   group_by(credit.policy) %>% 
-  summarise(across(c("dti", "fico", "inq.last.6mths", "revol.util"),
-            list(mean = ~mean(.x), sd = ~sd(.x)))) %>% 
+  summarise(across(where(is.numeric),
+            list(mean = ~mean(.x), 
+                 sd = ~sd(.x),
+                 median = ~median(.x),
+                 mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
   pivot_longer(-credit.policy, 
                names_to = c("Variable", ".value"), 
                names_sep = "_") %>% 
@@ -885,9 +848,6 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
   )
 
 
-
-
-
 theme <- theme(
     legend.position = "none",
     axis.text.x = element_text(size = 11, face = "bold"),
@@ -924,66 +884,118 @@ corr_plot
 #ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
 ```
 
-```{r}
-ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy))) +
-  geom_jitter(alpha = 0.5, size = 2, width = 0.4) +
-  theme_minimal() +
-  labs(title = "Kredito politika pagal FICO ir paskirtį",
-       x = "Paskolos paskirtis",
-       y = "FICO reitingas",
-       color = "Kredito politika") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
-```{r fig.height=8, fig.width=12}
+```{r}
 long_data <- sampled_data %>%
   pivot_longer(
-    cols = c(fico, int.rate, log.annual.inc, dti),
+    cols = c(fico, dti),
     names_to = "Rodiklis",
     values_to = "Reiksme"
   ) %>% 
-  mutate(Rodiklis = factor(Rodiklis, 
-                           levels = c("fico", "int.rate", "log.annual.inc", "dti"),
-                           labels = c("FICO reitingas", "Palūkanų norma", "Metinės pajamos (log)", "DTI rodiklis")))
+  mutate(
+    Rodiklis = factor(Rodiklis, 
+                      levels = c("fico", "dti"),
+                      labels = c("FICO reitingas", "DTI rodiklis")),
+    credit.policy_f = factor(credit.policy, levels = c("1", "0"))
+  ) %>%
+  arrange(credit.policy_f)
 
-ggplot(long_data, aes(x = purpose, y = Reiksme, color = as.factor(credit.policy))) +
-  geom_jitter(alpha = 0.5, size = 1.25, width = 0.3) +
-  stat_summary(
-    fun.min = min,
-    fun.max = max,
-    geom = "errorbar",
-    position = position_dodge(width = 0.5),
-    width = 0.4,
-    size = 0.8
+p <- ggplot(long_data, aes(x = purpose, y = Reiksme, 
+                      color = credit.policy_f)) +
+  geom_jitter(alpha = 0.5, size = 1.25, width = 0.4) +
+  scale_color_manual(
+    name = "Atitinka kriterijus",
+    labels = c("1" = "Taip", "0" = "Ne"),
+    values = c("1" = "#00BFC4", "0" = "#F8766D")
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) + 
   facet_wrap(~ Rodiklis, scales = "free_y") +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11),
     axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14, hjust = 0),
     plot.subtitle = element_text(size = 10),
-    strip.text = element_text(size = 12, face = "bold")) +
+    strip.text = element_text(size = 12),
+    legend.position = "bottom"
+  ) +
   labs(
     title = "Kredito politika pagal skirtingus rodiklius ir paskirtį",
+    subtitle = "Pastebėti FICO ir DTI slesnksčiai, nusakantys ar skolininkas atitinka reikalavimus",
     x = "Paskolos paskirtis",
     y = "Reikšmė",
     color = "Kredito politika"
-  ) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "bottom"
   )
+
+ggsave("slenksciai.png", plot = p, width = 8, height = 5, dpi = 300)
 ```
 
 ## Papildomos vizualizacijos
 
 ### Kredito politikos atitikimas pagal paskolos paskirtį
+
+
+```{r fig.height=4, fig.width=10}
+purpose_bar <- ggplot(sampled_data, aes(x = purpose, fill = purpose)) +
+  geom_bar() +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
+                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
+  labs(
+    title = "Duomenų pasiskirstymas pagal paskirtį",
+    subtitle = "Didžioji dalis žmonių ima paskolas skolų konsolidavimui",
+    x = "Paskolos paskirtis",
+    y = "Skaičius"
+  ) +
+  theme(legend.position = "none",
+    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14),
+    plot.subtitle = element_text(size = 10))
+
+
+credit_policy_bar <- ggplot(sampled_data, 
+       aes(x = factor(credit.policy, 
+                      levels = c(0, 1),
+                      labels = c("Ne", "Taip")),
+           fill = factor(credit.policy))) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    title = "Duomenų pasiskirstymas pagal kredito politiką",
+    subtitle = "Didžioji dalis žmonių atitinka kreido suteikimo kriterijus",
+    x = "Atitinka kriterijus",
+    y = NULL
+  ) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11)
+  ) +
+  theme(legend.position = "none",
+    axis.text.x = element_text(vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14),
+    plot.subtitle = element_text(size = 10))
+
+bar_by_diff_groups <- purpose_bar + credit_policy_bar
+bar_by_diff_groups
+
+#ggsave(filename = "bar_by_diff_groups.png", plot = bar_by_diff_groups, width = 10, height = 4, dpi = 300)
+```
+
+
+
+
+
 
 ```{r fig.height=6, fig.width=10}
 ggplot(sampled_data,
