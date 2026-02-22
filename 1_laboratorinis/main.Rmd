@@ -467,15 +467,15 @@ ggplot(all_char_tables$annual.inc) +
   scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
-  labs(x = "Paskirtis", y = "Matinės pajamos (USD)", 
+  labs(x = "Paskirtis", y = "Metinės pajamos (USD)", 
        title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
   coord_flip() +
   geom_hline(yintercept = 0, size = 1, color = "grey80") +
   theme_bw() + 
   theme(axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
         plot.title = element_text(size = 14),
         plot.subtitle = element_text(size = 10),
         legend.title = element_text(size = 11,),
