@@ -759,7 +759,7 @@ full_mean_sd_normalized <- sampled_data %>%
   mutate(across(where(is.numeric), mean_sd_normalization))
 ```
 
-```{r fig.height=8, fig.width=10}
+```{r fig.height=5.7, fig.width=6.7}
 int_rate_fico <- full_mean_sd_normalized %>%
   mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
   ggplot(aes(x = int.rate,
@@ -767,7 +767,7 @@ int_rate_fico <- full_mean_sd_normalized %>%
              color = credit.policy_f)) +
   geom_point(size = 1.5, alpha = 0.75) +
   labs(
-    title = "Palūkanų norma ir FICO reitingas",
+    title = "Palūkanų norma ir \nFICO reitingas",
     x = "Palūkanų norma",
     y = "FICO",
     color = "Atitiko kriterijus"
@@ -776,7 +776,7 @@ int_rate_fico <- full_mean_sd_normalized %>%
     values = c("1" = "#00BFC4", "0" = "#F8766D"),
     labels = c("1" = "Taip", "0" = "Ne")
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
@@ -788,7 +788,7 @@ revol_bal_util <- full_mean_sd_normalized %>%
              color = credit.policy_f)) +
   geom_point(size = 1.5, alpha = 0.75) +
   labs(
-    title = "Atnaujinamas balansas ir atsinaujinantis panaudojimas",
+    title = "Atnaujinamas balansas ir \natsinaujinantis panaudojimas",
     x = "Atnaujinamas balansas",
     y = "Atsinaujinantis panaudojimas",
     color = "Atitiko kriterijus"
@@ -797,7 +797,7 @@ revol_bal_util <- full_mean_sd_normalized %>%
     values = c("1" = "#00BFC4", "0" = "#F8766D"),
     labels = c("1" = "Taip", "0" = "Ne")
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
@@ -820,7 +820,7 @@ revol_util_fico <- full_mean_sd_normalized %>%
     values = c("1" = "#00BFC4", "0" = "#F8766D"),
     labels = c("1" = "Taip", "0" = "Ne")
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
@@ -842,7 +842,7 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
     values = c("1" = "#00BFC4", "0" = "#F8766D"),
     labels = c("1" = "Taip", "0" = "Ne")
   ) +
-  theme_minimal() +
+  theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
@@ -850,11 +850,11 @@ int_rate_revol_util <- full_mean_sd_normalized %>%
 
 theme <- theme(
     legend.position = "none",
-    axis.text.x = element_text(size = 11, face = "bold"),
-    axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 12),
-    axis.title.x = element_text(size = 12),
-    plot.title = element_text(size = 12, vjust = 1, hjust = 0.5),
+    axis.text.x = element_text(size = 10, face = "bold"),
+    axis.text.y = element_text(size = 10),
+    axis.title.y = element_text(size = 9),
+    axis.title.x = element_text(size = 9),
+    plot.title = element_text(size = 10, vjust = 1, hjust = 0.5),
     plot.subtitle = element_text(size = 10)
 )
 
@@ -865,27 +865,27 @@ corr_plot <- (
 
 corr_plot <- corr_plot +
   plot_layout(guides = "collect") &
-  theme_minimal() &
+  theme_bw() &
   theme & 
   theme(legend.position = "bottom")
 
 corr_plot <- corr_plot +
   plot_annotation(
     title = "Paskolų rodiklių tarpusavio ryšiai pagal kredito politiką",
-    subtitle = "Stipriausi tarpusavio ryšiai pastebimi tarp palūkanų normos, FICO reitingo ir atsinaujinančio panaudojimo",
+    subtitle = "Stipriausi tarpusavio ryšiai pastebimi tarp palūkanų normos, \nFICO reitingo ir atsinaujinančio panaudojimo",
     theme = theme(
       plot.title = element_text(hjust = 0, size = 14),
-      plot.subtitle = element_text(hjust = 0, size = 12)
+      plot.subtitle = element_text(hjust = 0, size = 10)
     )
   )
 
 corr_plot
 
-#ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
+#ggsave(filename = "corrplot.png", plot = corr_plot, width = 6.7, height = 5.7, dpi = 300)
 ```
 
 
-```{r}
+```{r fig.height=4.5, fig.width=6.7, message=FALSE, warning=FALSE}
 long_data <- sampled_data %>%
   pivot_longer(
     cols = c(fico, dti),
@@ -917,7 +917,7 @@ p <- ggplot(long_data, aes(x = purpose, y = Reiksme,
     axis.text.y = element_text(size = 11),
     axis.title.y = element_text(size = 12),
     axis.title.x = element_text(size = 12),
-    plot.title = element_text(size = 14, hjust = 0),
+    plot.title = element_text(size = 14),
     plot.subtitle = element_text(size = 10),
     strip.text = element_text(size = 12),
     legend.position = "bottom"
@@ -930,7 +930,9 @@ p <- ggplot(long_data, aes(x = purpose, y = Reiksme,
     color = "Kredito politika"
   )
 
-ggsave("slenksciai.png", plot = p, width = 8, height = 5, dpi = 300)
+p
+
+#ggsave("slenksciai.png", plot = p, width = 6.7, height = 4.5, dpi = 300)
 ```
 
 ## Papildomos vizualizacijos
@@ -942,7 +944,7 @@ ggsave("slenksciai.png", plot = p, width = 8, height = 5, dpi = 300)
 purpose_bar <- ggplot(sampled_data, aes(x = purpose, fill = purpose)) +
   geom_bar() +
   scale_fill_viridis_d(option = "plasma") +
-  theme_minimal() +
+  theme_bw() +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
   labs(
@@ -964,7 +966,7 @@ credit_policy_bar <- ggplot(sampled_data,
                       labels = c("Ne", "Taip")),
            fill = factor(credit.policy))) +
   geom_bar() +
-  theme_minimal() +
+  theme_bw() +
   labs(
     x = "Atitinka kriterijus",
     y = "Skaičius"
@@ -983,7 +985,7 @@ bar_by_diff_groups <- purpose_bar + credit_policy_bar +
     subtitle = "Didžioji dalis paskolų imama skolų konsolidavimui, o dauguma skolininkų atitinka kriterijus",
     theme = theme(
       plot.title = element_text(size = 14,),
-      plot.subtitle = element_text(size = 11)
+      plot.subtitle = element_text(size = 10)
     )
   )
 
