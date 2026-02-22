@@ -449,12 +449,27 @@ top_part <- char_of_sets %>%
 
 ## Skaitinės charakteristikos
 
+
 ```{r}
 Modes <- function(x) {
   ux <- unique(x)
   tab <- tabulate(match(x, ux))
   ux[tab == max(tab)][1]
 }
+```
+
+```{r}
+char <- sampled_data %>% 
+  summarise(across(where(is.numeric),
+            list(mean = ~mean(.x), 
+                 sd = ~sd(.x),
+                 median = ~median(.x),
+                 mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
+  pivot_longer(everything(), 
+               names_to = c("Variable", ".value"), 
+               names_sep = "_") %>% 
+  mutate(across(where(is.numeric), ~ round(.x, 4)))
+char
 ```
 
 
@@ -523,8 +538,11 @@ ggplot(all_char_tables$annual.inc) +
 ```{r}
 char_credit_policy <- sampled_data %>% 
   group_by(credit.policy) %>% 
-  summarise(across(c("dti", "fico", "inq.last.6mths", "revol.util"),
-            list(mean = ~mean(.x), sd = ~sd(.x)))) %>% 
+  summarise(across(where(is.numeric),
+            list(mean = ~mean(.x), 
+                 sd = ~sd(.x),
+                 median = ~median(.x),
+                 mode = ~if (cur_column() %in% c("inq.last.6mths", "delinq.2yrs", "pub.rec")){Modes(.x)} else {NA}))) %>% 
   pivot_longer(-credit.policy, 
                names_to = c("Variable", ".value"), 
                names_sep = "_") %>% 
