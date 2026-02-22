@@ -742,14 +742,22 @@ numeric_values <- mean_sd_normalized %>%
     "Metinės pajamos" = annual.inc,
   )
 
-options(OutDec = ",")
-cor <- cor(numeric_values)
-par(mar = c(0, 0, 4, 0))
-corrplot(cor, method = "number", tl.col = "black")
+#png("koreliaciju_matrica.png", width = 2000, height = 2000, res = 300)
 
-mtext("Koreliacijų matrica", side = 3, adj = 0, line = 2, cex = 1.5)
-mtext("Didžiausia koreliacija tarp FICO ir palūkanų normos: -0,71", side = 3, adj = 0, line = 0.95)
+options(OutDec = ",")
+cor <- cor(numeric_values, method = "pearson")
+par(mar = c(0, 0, 4, 0))
+corrplot(cor, method = "circle", tl.col = "black", , type = 'lower', insig='blank',
+         addCoef.col ='black', number.cex = 0.8, order = 'AOE', diag=FALSE)
+
+mtext("Skaitinių kintamųjų koreliacijų matrica", side = 3, adj = 0, line = 2, cex = 1.17)
+mtext("Didžiausia koreliacija tarp FICO ir palūkanų normos: -0,71", side = 3, adj = 0, line = 0.95, cex = 0.75)
+
+#dev.off()
 ```
+
+
+
 
 ```{r fig.height=14, fig.width=14, message=FALSE}
 scatter_matrix <- ggpairs(numeric_values,
