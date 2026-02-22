@@ -900,7 +900,7 @@ long_data <- sampled_data %>%
   ) %>%
   arrange(credit.policy_f)
 
-ggplot(long_data, aes(x = purpose, y = Reiksme, 
+p <- ggplot(long_data, aes(x = purpose, y = Reiksme, 
                       color = credit.policy_f)) +
   geom_jitter(alpha = 0.5, size = 1.25, width = 0.4) +
   scale_color_manual(
@@ -929,11 +929,73 @@ ggplot(long_data, aes(x = purpose, y = Reiksme,
     y = "Reikšmė",
     color = "Kredito politika"
   )
+
+ggsave("slenksciai.png", plot = p, width = 8, height = 5, dpi = 300)
 ```
 
 ## Papildomos vizualizacijos
 
 ### Kredito politikos atitikimas pagal paskolos paskirtį
+
+
+```{r fig.height=4, fig.width=10}
+purpose_bar <- ggplot(sampled_data, aes(x = purpose, fill = purpose)) +
+  geom_bar() +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal() +
+  scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
+                              "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
+  labs(
+    title = "Duomenų pasiskirstymas pagal paskirtį",
+    subtitle = "Didžioji dalis žmonių ima paskolas skolų konsolidavimui",
+    x = "Paskolos paskirtis",
+    y = "Skaičius"
+  ) +
+  theme(legend.position = "none",
+    axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14),
+    plot.subtitle = element_text(size = 10))
+
+
+credit_policy_bar <- ggplot(sampled_data, 
+       aes(x = factor(credit.policy, 
+                      levels = c(0, 1),
+                      labels = c("Ne", "Taip")),
+           fill = factor(credit.policy))) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    title = "Duomenų pasiskirstymas pagal kredito politiką",
+    subtitle = "Didžioji dalis žmonių atitinka kreido suteikimo kriterijus",
+    x = "Atitinka kriterijus",
+    y = NULL
+  ) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11)
+  ) +
+  theme(legend.position = "none",
+    axis.text.x = element_text(vjust = 1, hjust = 1, size = 11, face = "bold"),
+    axis.text.y = element_text(size = 11),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 14),
+    plot.subtitle = element_text(size = 10))
+
+bar_by_diff_groups <- purpose_bar + credit_policy_bar
+bar_by_diff_groups
+
+#ggsave(filename = "bar_by_diff_groups.png", plot = bar_by_diff_groups, width = 10, height = 4, dpi = 300)
+```
+
+
+
+
+
 
 ```{r fig.height=6, fig.width=10}
 ggplot(sampled_data,
