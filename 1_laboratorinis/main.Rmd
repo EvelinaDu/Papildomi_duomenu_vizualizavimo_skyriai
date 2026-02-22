@@ -339,7 +339,7 @@ outlier_summary_by_group %>%
   )) +
   labs(title = "Grupių išskirčių palyginimas su bendru skaičiumi",
        subtitle = "Tendencijos tarp požymių vienodos su didžiausiu išskirčių skaičiumi skolų konsolidavimo grupėje.",
-       x = "Požymis",
+       x = "Paskirtis",
        y = "Išskirčių skaičius")
 
 #ggsave(filename = "Grupių išskirčių palyginimas su bendru skaičiumi.png", width = 6.7, height = 3.2, units = "in", dpi = 300)
