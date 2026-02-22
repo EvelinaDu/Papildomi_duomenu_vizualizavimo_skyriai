@@ -558,7 +558,7 @@ ggplot(all_char_tables$annual.inc) +
   scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
   scale_x_discrete(labels = c("Visi kiti", "Kredito kortelė", "Skolų konsolidavimas",
                               "Edukacija", "Namų remontas", "Svarbus pirkinys", "Smulkus verslas")) +
-  labs(x = "Paskolos tikslas", y = "Matinės pajamos", 
+  labs(x = "Paskirtis", y = "Matinės pajamos", 
        title = "Metinės pajamos", subtitle = "Klientų negaunančių paskolos grupė, dažnai pasižymi vidutiniškai mažesnėmis pajamomis") +
   coord_flip() +
   geom_hline(yintercept = 0, size = 1, color = "grey80") +
@@ -567,10 +567,11 @@ ggplot(all_char_tables$annual.inc) +
         axis.text.y = element_text(size = 11),
         axis.title.y = element_text(size = 12, face = "bold"),
         axis.title.x = element_text(size = 12, face = "bold"),
-        plot.title = element_text(size = 16),
+        plot.title = element_text(size = 14),
         plot.subtitle = element_text(size = 10),
         legend.title = element_text(size = 11,),
         legend.text = element_text(size = 10))
+#ggsave(filename = "Metines_pajamos.png", width = 8, height = 5, units = "in", dpi = 300)
 ```
 
 ```{r}
@@ -587,9 +588,9 @@ hist1 <- sampled_data %>%
   ggplot(aes(x = dti, fill = credit.policy_f, color = credit.policy_f)) +
   geom_histogram(position = 'identity', bins = 60, alpha = 0.75) +
   geom_vline(aes(xintercept = 13.63561), color = "red", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 15.75, y = 80, label = "13,64"), size = 4.5, color = "red") +
+  geom_text(aes(x = 15.75, y = 80, label = "13,64"), size = 4, color = "red") +
   geom_vline(aes(xintercept = 12.20146), color = "blue", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 10, y = 80, label = "12,20"), size = 4.5, color = "blue") +
+  geom_text(aes(x = 10, y = 80, label = "12,20"), size = 4, color = "blue") +
   labs(x = "Skolos ir pajamų santykis (DTI)", y = "Dažnis", color = "Atitinka kriterijus") +
   scale_fill_manual(name = "Atitiko kriterijus", 
                     labels = c("1" = "Taip", "0" = "Ne"), 
@@ -597,12 +598,12 @@ hist1 <- sampled_data %>%
   scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
                      guide = "none") +
   scale_x_continuous(breaks = seq(0, 30, 5)) +
-  scale_y_continuous(breaks = seq(0, 100, 10)) +
+  scale_y_continuous(breaks = seq(0, 100, 20)) +
   theme_bw() + 
   theme(axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
         legend.position = "none")
 hist1
 
@@ -611,20 +612,22 @@ hist2 <- sampled_data %>%
   ggplot(aes(x = fico, fill = credit.policy_f, color = credit.policy_f)) +
   geom_histogram(position = 'identity', bins = 40, alpha = 0.75) + 
   geom_vline(aes(xintercept = 683.0162), color = "red", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 665, y = 250, label = "683,01"), size = 4.5, color = "red") +
+  geom_text(aes(x = 664.5, y = 250, label = "683,01"), size = 4, color = "red") +
   geom_vline(aes(xintercept = 717.8112), color = "blue", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 735, y = 250, label = "717,81"), size = 4.5, color = "blue") +
+  geom_text(aes(x = 740, y = 250, label = "717,81"), size = 4, color = "blue") +
   labs(x = "FICO kredito reitingas", y = NULL, color = "Atitinka kriterijus") +
   scale_fill_manual(name = "Atitiko kriterijus", 
                     labels = c("1" = "Taip", "0" = "Ne"), 
                     values = c("1" = "#00BFC4", "0" = "#F8766D")) +
   scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
                      guide = "none") +
+  scale_x_continuous(breaks = seq(625, 850, 25)) +
+  scale_y_continuous(breaks = seq(0, 300, 50)) +
   theme_bw() + 
   theme(axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
         legend.position = "none")
 hist2
 
@@ -633,9 +636,9 @@ hist3 <- sampled_data %>%
   ggplot(aes(x = inq.last.6mths, fill = credit.policy_f, color = credit.policy_f)) +
   geom_histogram(position = 'identity', bins = 25, alpha = 0.75) + 
   geom_vline(aes(xintercept = 3.87348591), color = "red", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 5.2, y = 1125, label = "3,87"), size = 4.5, color = "red") +
+  geom_text(aes(x = 5.6, y = 1140, label = "3,87"), size = 4, color = "red") +
   geom_vline(aes(xintercept = 0.9883193), color = "blue", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 2.3, y = 1125, label = "0,99"), size = 4.5, color = "blue") +
+  geom_text(aes(x = 2.3, y = 1140, label = "0,99"), size = 4, color = "blue") +
   labs(x = "Užklausų skaičius per pastaruosius 6 mėn.", y = "Dažnis", color = "Atitinka kriterijus") +
   scale_fill_manual(name = "Atitiko kriterijus", 
                     labels = c("1" = "Taip", "0" = "Ne"), 
@@ -647,8 +650,8 @@ hist3 <- sampled_data %>%
   theme_bw() + 
   theme(axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
         legend.position = "none")
 hist3
 
@@ -657,22 +660,22 @@ hist4 <- sampled_data %>%
   ggplot(aes(x = revol.util, fill = credit.policy_f, color = credit.policy_f)) +
   geom_histogram(position = 'identity', bins = 25, alpha = 0.75) + 
   geom_vline(aes(xintercept = 52.8874), color = "red", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 61, y = 170, label = "52,89"), size = 4.5, color = "red") +
+  geom_text(aes(x = 62, y = 170, label = "52,89"), size = 4, color = "red") +
   geom_vline(aes(xintercept = 44.7516), color = "blue", size = 1.1, linetype="dashed") +
-  geom_text(aes(x = 37.5, y = 170, label = "44,75"), size = 4.5, color = "blue") +
+  geom_text(aes(x = 36.5, y = 170, label = "44,75"), size = 4, color = "blue") +
   labs(x = "Atsinaujinantis panaudojimas", y = NULL, color = "Atitinka kriterijus") +
   scale_fill_manual(name = "Atitiko kriterijus", 
                     labels = c("1" = "Taip", "0" = "Ne"), 
                     values = c("1" = "#00BFC4", "0" = "#F8766D")) +
   scale_color_manual(values = c("1" = "#00BFC4", "0" = "#F8766D"),
                      guide = "none") +
-  scale_x_continuous(breaks = seq(0, 100, 10)) +
+  scale_x_continuous(breaks = seq(0, 100, 20)) +
   scale_y_continuous(breaks = seq(0, 200, 50)) +
   theme_bw() + 
   theme(axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 11),
-        axis.title.y = element_text(size = 12, face = "bold"),
-        axis.title.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
         legend.position = "none")
 hist4
 
@@ -685,11 +688,12 @@ combined_hist <- (hist1 + hist2 + hist3 + hist4) +
 
 combined_hist + plot_annotation(
   title = "Skolininkų rodiklių pasiskirstymas pagal kredito politiką",
-  subtitle = "Didžiausias grupių vidurkių skirtumas matomas tarp FICO reitingo (brūkšninės vertikalios linijos žymi grupių vidurkius).",
-  theme = theme(plot.title = element_text(size = 16),
+  subtitle = "Didžiausias grupių vidurkių skirtumas matomas tarp FICO reitingo. \n(Brūkšninės vertikalios linijos žymi grupių vidurkius).",
+  theme = theme(plot.title = element_text(size = 14),
                 plot.subtitle = element_text(size = 10),
                 legend.title = element_text(size = 11,),
                 legend.text = element_text(size = 10)))
+#ggsave(filename = "histogramos.png", width = 7.5, height = 6, units = "in", dpi = 300)
 ```
 
 ## Duomenų aibės normavimas
