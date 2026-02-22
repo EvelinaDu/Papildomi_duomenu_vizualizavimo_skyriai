@@ -794,71 +794,94 @@ scatter_matrix_cat +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
+```{r}
+full_mean_sd_normalized <- sampled_data %>% 
+  mutate(across(where(is.numeric), mean_sd_normalization))
+```
+
+
 ```{r fig.height=8, fig.width=10}
-int_rate_fico <- ggplot(sampled_data, aes(x = int.rate, 
-                         y = fico, 
-                         color = credit.policy)) +
-  geom_point(size = 1.5, alpha = 0.5) +
-  #geom_smooth(method = "lm", se = FALSE) +
+int_rate_fico <- full_mean_sd_normalized %>%
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
+  ggplot(aes(x = int.rate,
+             y = fico,
+             color = credit.policy_f)) +
+  geom_point(size = 1.5, alpha = 0.75) +
   labs(
     title = "Palūkanų norma ir FICO reitingas",
     x = "Palūkanos",
     y = "FICO",
-    color = "Kredito politika"
+    color = "Atitiko kriterijus"
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_color_manual(
+    values = c("1" = "#00BFC4", "0" = "#F8766D"),
+    labels = c("1" = "Taip", "0" = "Ne")
+  ) +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
 
-revol_bal_fico <- ggplot(sampled_data, aes(x = fico, 
-                         y = revol.bal, 
-                         color = credit.policy)) +
-  geom_point(size = 1.5, alpha = 0.5) +
-  #geom_smooth(method = "lm", se = FALSE) +
+
+revol_util_fico <- full_mean_sd_normalized %>%
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
+  ggplot(aes(x = fico, 
+             y = revol.util, 
+             color = credit.policy_f)) +
+  geom_point(size = 1.5, alpha = 0.75) +
   labs(
-    title = "FICO reitingas ir atnaujinamas balansas",
+    title = "FICO reitingas ir atsinaujinantis panaudojimas",
     x = "FICO",
-    y = "Atnaujinamas balansas",
-    color = "Kredito politika"
+    y = "Atsinaujinantis panaudojimas",
+    color = "Atitiko kriterijus"
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_color_manual(
+    values = c("1" = "#00BFC4", "0" = "#F8766D"),
+    labels = c("1" = "Taip", "0" = "Ne")
+  ) +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
 
-int_rate_revol_bal <- ggplot(sampled_data, aes(x = int.rate, 
-                         y = revol.bal, 
-                         color = credit.policy)) +
-  geom_point(size = 1.5, alpha = 0.5) +
-  #geom_smooth(method = "lm", se = FALSE) +
+int_rate_revol_util <- full_mean_sd_normalized %>%
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
+  ggplot(aes(x = int.rate, 
+             y = revol.util, 
+             color = credit.policy_f)) +
+  geom_point(size = 1.5, alpha = 0.75) +
   labs(
-    title = "Palūkanų norma ir atnaujinamas balansas",
+    title = "Palūkanų norma ir atsinaujinantis panaudojimas",
     x = "Palūkanos",
-    y = "Atnaujinamas balansas",
-    color = "Kredito politika"
+    y = "Atsinaujinantis panaudojimas",
+    color = "Atitiko kriterijus"
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_color_manual(
+    values = c("1" = "#00BFC4", "0" = "#F8766D"),
+    labels = c("1" = "Taip", "0" = "Ne")
+  ) +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5)
   )
 
 
-installment_annual_inc <- ggplot(sampled_data, aes(x = installment, 
-                         y = log.annual.inc, 
-                         color = credit.policy)) +
-  geom_point(size = 1.5, alpha = 0.5) +
-  #geom_smooth(method = "lm", se = FALSE) + 
+revol_bal_annual_inc <- full_mean_sd_normalized %>%
+  mutate(credit.policy_f = factor(credit.policy, levels = c("1", "0"))) %>%
+  ggplot(aes(x = revol.bal, 
+             y = annual.inc, 
+             color = credit.policy_f)) +
+  geom_point(size = 1.5, alpha = 0.75) +
   labs(
-    title = "Mėnesinė įmoka ir metinių pajamų logaritmas",
-    x = "Įmoka",
-    y = "Pajamos (log)",
-    color = "Kredito politika"
+    title = "Mėnesinė įmoka ir metinės pajamos",
+    x = "Atnaujinamas balansas",
+    y = "Metinės pajamos",
+    color = "Atitiko kriterijus"
   ) +
-  scale_color_discrete(name = "Atitinka kriterijus", labels = c("Ne","Taip")) +
+  scale_color_manual(
+    values = c("1" = "#00BFC4", "0" = "#F8766D"),
+    labels = c("1" = "Taip", "0" = "Ne")
+  ) +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5)
@@ -868,15 +891,15 @@ theme <- theme(
     legend.position = "none",
     axis.text.x = element_text(size = 11, face = "bold"),
     axis.text.y = element_text(size = 11),
-    axis.title.y = element_text(size = 12, face = "bold"),
-    axis.title.x = element_text(size = 12, face = "bold"),
-    plot.title = element_text(size = 16, vjust = 1, hjust = 0.5),
+    axis.title.y = element_text(size = 12),
+    axis.title.x = element_text(size = 12),
+    plot.title = element_text(size = 12, vjust = 1, hjust = 0.5),
     plot.subtitle = element_text(size = 10)
 )
 
 corr_plot <- (
-  (int_rate_fico + revol_bal_fico) /
-  (int_rate_revol_bal + installment_annual_inc)
+  (int_rate_fico + revol_util_fico) /
+  (int_rate_revol_util + revol_bal_annual_inc)
 )
 
 corr_plot <- corr_plot +
@@ -885,13 +908,18 @@ corr_plot <- corr_plot +
   theme & 
   theme(legend.position = "bottom")
 
-corr_plot +
+corr_plot <- corr_plot +
   plot_annotation(
     title = "Paskolų rodiklių tarpusavio ryšiai pagal kredito politiką",
-    theme = theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"))
+    theme = theme(plot.title = element_text(hjust = 0, size = 14))
   )
 
+#ggsave(filename = "corrplot.png", plot = corr_plot, width = 10, height = 8, dpi = 300)
 ```
+
+
+
+
 
 ```{r}
 ggplot(sampled_data, aes(x = purpose, y = fico, color = as.factor(credit.policy))) +
