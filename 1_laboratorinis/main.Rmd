@@ -194,6 +194,8 @@ gg_n_dim_outliers
 
 ### Išskirtys pagal grupes
 
+#### Paskirtis
+
 ```{r}
 outlier_summary_by_group <- sampled_data %>% 
   group_by(purpose) %>% 
@@ -256,17 +258,21 @@ outlier_summary_by_group %>%
 #ggsave(filename = "Išskirtys_pagal_paskirtį_ir_požymį.png", width = 6.7, height = 4.5, units = "in", dpi = 300)
 ```
 
-```{r fig.height=3.2, fig.width=6.7, message=FALSE, warning=FALSE}
-hline_data <- outlier_summary %>% filter(variable %in% c("delinq.2yrs", "pub.rec", "revol.bal")) %>% 
-  select(variable, extreme_outliers)
+```{r}
+n_by_purpose <- sampled_data %>% 
+  group_by(purpose) %>% 
+  summarise(n = n())
 
+outlier_summary_by_group <- outlier_summary_by_group %>% left_join(n_by_purpose, by = "purpose") %>% 
+  mutate(part = extreme_outliers / n)
+```
+
+```{r fig.height=4.5, fig.width=6.7, message=FALSE, warning=FALSE}
 outlier_summary_by_group %>% 
-  filter(variable %in% c("delinq.2yrs", "pub.rec", "revol.bal")) %>% 
-  select(variable, purpose, extreme_outliers) %>% 
-  ggplot(aes(x = purpose, y = extreme_outliers, fill = purpose)) +
+  filter(variable %in% variables) %>% 
+  select(variable, purpose, extreme_outliers, part) %>% 
+  ggplot(aes(x = purpose, y = part, fill = purpose)) +
   geom_col() +
-  geom_hline(data = hline_data, aes(yintercept = extreme_outliers), 
-             color = "grey15", linetype = "dashed", size = 1) +
   facet_wrap(~variable,
              labeller = as_labeller(variable_names) ) +
   scale_fill_viridis_d(option = "plasma") +
@@ -287,12 +293,71 @@ outlier_summary_by_group %>%
     "major_purchase" = "Svarbus pirkinys",
     "small_business" = "Smulkus verslas"
   )) +
-  labs(title = "Grupių išskirčių palyginimas su bendru skaičiumi",
-       subtitle = "Tendencijos tarp požymių vienodos su didžiausiu išskirčių skaičiumi skolų konsolidavimo grupėje.",
+  scale_y_continuous(labels = label_number(decimal.mark = ",") ) +
+  labs(title = "Išskirčių dalis pagal paskirtį ir požymį",
+       subtitle = "Diskretūs požymiai pasižymi panašia išskirčių dalimi.",
        x = "Paskirtis",
        y = "Išskirčių skaičius")
 
-#ggsave(filename = "Grupių išskirčių palyginimas su bendru skaičiumi.png", width = 6.7, height = 3.2, units = "in", dpi = 300)
+#ggsave(filename = "Išskirčių dalis pagal paskirtį ir požymį.png", width = 6.7, height = 4.5, units = "in", dpi = 300)
+```
+
+#### Kriterijai
+
+```{r}
+outlier_summary_by_policy <- sampled_data %>% 
+  group_by(credit.policy) %>% 
+  reframe(
+    map_dfr(numeric_cols, ~count_outliers(pick(everything()), .x))
+  )
+
+outlier_summary_by_policy
+```
+
+```{r}
+n_by_policy <- sampled_data %>% 
+  group_by(credit.policy) %>% 
+  summarise(n = n())
+
+outlier_summary_by_policy <- outlier_summary_by_policy %>% left_join(n_by_policy, by = "credit.policy") %>% 
+  mutate(part = extreme_outliers / n)
+```
+
+```{r fig.height=3, fig.width=6.7, message=FALSE, warning=FALSE}
+outlier_summary_by_policy %>% 
+  filter(extreme_outliers > 0 & variable != 'annual.inc' & variable != 'log.annual.inc') %>% 
+  pull(variable) %>% 
+  unique() -> variables
+
+variables[!variables %in% c("days.with.cr.line", "inq.last.6mths")] -> variables
+
+outlier_summary_by_policy %>% 
+  filter(variable %in% variables) %>% 
+  select(variable, credit.policy, extreme_outliers, part) %>% 
+  ggplot(aes(x = credit.policy, y = part, fill = credit.policy)) +
+  geom_col() +
+  facet_wrap(~variable,
+             labeller = as_labeller(variable_names) ) +
+  scale_fill_viridis_d(option = "plasma", end = 0.7, begin = 0.05) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 8, face = "bold"),
+        legend.position = "none",
+        axis.text.y = element_text(size = 11),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        plot.title = element_text(size = 14),
+        plot.subtitle = element_text(size = 10)) +
+  scale_x_discrete(labels = c(
+    "0" = "Neatitinka",
+    "1" = "Atitinka"
+  )) +
+  scale_y_continuous(labels = label_number(decimal.mark = ",") ) +
+  labs(title = "Išskirčių dalis pagal kriterijus",
+       subtitle = "Kriterijų neatitinkančių, išsiskiriančių skolininkų dalis yra didesnė.",
+       x = "Ar atitinka kriterijus",
+       y = "Išskirčių skaičius")
+
+#ggsave(filename = "Išskirčių dalis pagal kriterijus.png", width = 6.7, height = 3, units = "in", dpi = 300)
 ```
 
 ### Aibių palyginimas
@@ -361,7 +426,7 @@ bottom_part <- char_of_sets %>%
                 width = 0.2, size = 0.8) +
   facet_wrap(~Variable,
              scale = "free_y",
-             labeller = as_labeller(variable_names))+
+             labeller = as_labeller(variable_names)) +
   scale_y_continuous(labels = label_number(decimal.mark = ",") ) +
   theme_bw() +
   labs(x = NULL, y = NULL, color = "Duomenų poaibis") +
