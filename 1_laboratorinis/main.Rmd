@@ -462,7 +462,7 @@ ggplot(all_char_tables$annual.inc) +
   geom_point(aes(x = purpose, y = mean, group = credit.policy, shape = "Vidurkis"), 
              position = dodge_val, size = 3) +
   geom_errorbar(aes(x = purpose,
-                    ymin = mean-sd,
+                    ymin = pmax(mean-sd, 0),
                     ymax = mean+sd,
                     color = credit.policy, group = credit.policy),
                 width = 0.3, size = 1, position = dodge_val) +
